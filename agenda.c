@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+//asfçsd
 typedef struct Agenda{
 	char nome[50];
 	double numero_celular;
