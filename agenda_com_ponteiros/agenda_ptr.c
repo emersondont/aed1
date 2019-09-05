@@ -1,6 +1,7 @@
 ﻿//primeira posicao do pBuffer eh um inteiro com a opcao
 //a segunda eh um int com o num de elementos
 //cada nome tera no max 10 bytes
+//
 
 #include <stdio.h>
 #include <stdlib.h>
