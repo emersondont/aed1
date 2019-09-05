@@ -28,7 +28,7 @@ int main(){
 		}
 	}while((*(int *)pBuffer) != 3);
 	
-	//free(pBuffer);
+	free(pBuffer);
 	return 0;
 }
 
@@ -74,5 +74,17 @@ void imprimir(void *pBuffer){
 	int *i, *tam;
 	i = (int *)pBuffer;
 	tam = (int *)(pBuffer + 1*(sizeof(int)));
-	printf("i: %d  tam: %d", *i, *tam);
+	//printf("i: %d  tam: %d\n", *i, *tam);
+	
+	for(*i = 0; *i < *tam; *i++){
+		printf("registro %d, nome: ", *i);
+
+		c = (char *)(pBuffer + 3*sizeof(int) + *i*(10*sizeof(char)));
+
+		while(*c != '\0'){
+			printf("%c", *c);
+			c += 1*sizeof(char);
+		}
+		printf("\n");
+	}
 }
