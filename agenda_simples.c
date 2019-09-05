@@ -16,6 +16,7 @@ void imprime_dados(agenda *alguem);
 void excluir(agenda *ini);
 void listar_um(agenda *ini);
 void ler_string(char string[50]);
+void limpa_memoria(agenda *ini);
 
 int main(){
 	int opcao;
@@ -38,11 +39,12 @@ int main(){
 				listar_todos(ini);
 				break;
 			case 5:
-			    printf("ate mais");
+			    printf("ate mais\n");
 				break;
 		}
 	}while(opcao != 5);
 
+	limpa_memoria(ini);
 	return 0;
 }
 agenda *cria_lista(){
@@ -148,4 +150,21 @@ void ler_string(char string[50]){
       i++;
     }
     string[i] = '\0';
+}
+
+void limpa_memoria(agenda *ini){
+	agenda *apaga, *aux;
+	if(ini->prox == NULL){
+		free(ini);
+		return;
+	}
+
+	aux = ini;  
+	do{
+		apaga = ini->prox;
+		aux->prox = apaga->prox;
+		free(apaga);
+
+	}while(aux ->prox != NULL);
+	free(ini);
 }
