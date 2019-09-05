@@ -1,9 +1,4 @@
-﻿//primeira posicao do pBuffer eh um inteiro com a opcao
-//a segunda eh um int com o num de elementos
-//cada nome tera no max 10 bytes
-//
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 
 void menu(int *opcao);
@@ -13,9 +8,9 @@ void imprimir(void *pBuffer);
 
 int main(){
 	void *pBuffer = NULL;
-	pBuffer = (int *)malloc(2*sizeof(int));
+	pBuffer = (int *)malloc(3*sizeof(int));
 	*(int *)(pBuffer + (1 * sizeof(int))) = 0;	//num de elementos
-
+	*(int *)(pBuffer + (2 * sizeof(int))) = (3*sizeof(int));	//tamanho do pBuffer
 	do{
 		menu((int *)pBuffer);
 		switch(*(int *)pBuffer){
@@ -33,7 +28,7 @@ int main(){
 		}
 	}while((*(int *)pBuffer) != 3);
 	
-	free(pBuffer);
+	//free(pBuffer);
 	return 0;
 }
 
@@ -48,33 +43,36 @@ void menu(int *opcao){
 	}while((*opcao <= 0) || (*opcao > 3));
 }
 
-int pointer_size(void *pBuffer){
-	return ( (*(int *)(pBuffer + ((1*sizeof(int)))) * (10*sizeof(char))) + (2*sizeof(int)));
-}
-
 void inserir(void *pBuffer){
-	pBuffer = realloc(pBuffer, pointer_size(pBuffer)); //realoca mais 1 char
 	char *c;
-	
-	c = (pBuffer + 1*sizeof(int) + 1*sizeof(char));
+
+	c = (char *)(pBuffer + *(int *)(pBuffer + (2 * sizeof(int))));			//faz o c apontar para o primeiro caracter a ir para a memoria
+	*(int *)(pBuffer + (2 * sizeof(int))) += (10*sizeof(char));				//mais 10 char
+	pBuffer = realloc(pBuffer, *(int *)(pBuffer + (2 * sizeof(int))));		//mais 10 char
+
+	//printf("%d", *(int *)(pBuffer + (2 * sizeof(int))));
 
 	getchar();
-	printf("digite: ");
+	printf("nome(max 10 caracter): ");
 
 	while((*c = getchar()) != '\n'){
 		c += 1*sizeof(char);
 	}
 	*c = '\0';
-	
-	c = (pBuffer + 1*sizeof(int) + 1*sizeof(char));
-
+	/*printf("nome: ");
+	c = (char *)(pBuffer + *(int *)(pBuffer + (2 * sizeof(int))) - (10*sizeof(char)));
+	//getchar();
 	while(*c != '\0'){
 		printf("%c", *c);
 		c += 1*sizeof(char);
-	}
+	}*/
 
 }
 
 void imprimir(void *pBuffer){
-
+	char *c;
+	int *i, *tam;
+	i = (int *)pBuffer;
+	tam = (int *)(pBuffer + 1*(sizeof(int)));
+	printf("i: %d  tam: %d", *i, *tam);
 }
