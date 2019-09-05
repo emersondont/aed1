@@ -164,7 +164,6 @@ void limpa_memoria(agenda *ini){
 		apaga = ini->prox;
 		aux->prox = apaga->prox;
 		free(apaga);
-
 	}while(aux ->prox != NULL);
 	free(ini);
 }
