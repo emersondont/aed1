@@ -19,8 +19,8 @@ int main(){
 				inserir(pBuffer);
 				break;
 			case 2:
-				imprimir(pBuffer);
-				//printf("%d\n", *(int *)(pBuffer + sizeof(int)));
+				//imprimir(pBuffer);
+				printf("%d\n", *(int *)(pBuffer + sizeof(int)));
 				break;
 			case 3:
 				printf("saindo...\n");
@@ -45,20 +45,28 @@ void menu(int *opcao){
 
 void inserir(void *pBuffer){
 	char *c;
+	int *tam, *qtd;
 
-	c = (char *)(pBuffer + *(int *)(pBuffer + (2 * sizeof(int))));			//faz o c apontar para o primeiro caracter a ir para a memoria
-	*(int *)(pBuffer + (2 * sizeof(int))) += (10*sizeof(char));				//mais 10 char
-	pBuffer = realloc(pBuffer, *(int *)(pBuffer + (2 * sizeof(int))));		//mais 10 char
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+	pBuffer = realloc(pBuffer, *tam += (1*sizeof(char)));
+	c = (char *)(pBuffer + *tam + 1*sizeof(char));
 
-	//printf("%d", *(int *)(pBuffer + (2 * sizeof(int))));
 
+	*tam += (1 * sizeof(char));
 	getchar();
+	*c = getchar();
+	printf("%d %d %c", *qtd, *tam, *c);
+
+	
+
+	/*getchar();
 	printf("nome(max 10 caracter): ");
 
 	while((*c = getchar()) != '\n'){
 		c += 1*sizeof(char);
 	}
-	*c = '\0';
+	*c = '\0';*/
 	/*printf("nome: ");
 	c = (char *)(pBuffer + *(int *)(pBuffer + (2 * sizeof(int))) - (10*sizeof(char)));
 	//getchar();
@@ -71,20 +79,17 @@ void inserir(void *pBuffer){
 
 void imprimir(void *pBuffer){
 	char *c;
-	int *i, *tam;
-	i = (int *)pBuffer;
-	tam = (int *)(pBuffer + 1*(sizeof(int)));
-	//printf("i: %d  tam: %d\n", *i, *tam);
-	
-	for(*i = 0; *i < *tam; *i++){
-		printf("registro %d, nome: ", *i);
+	int *i, *tam, *qtd;
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+	c = (char *)(pBuffer + (2*sizeof(int)) + (1*sizeof(char)));
 
-		c = (char *)(pBuffer + 3*sizeof(int) + *i*(10*sizeof(char)));
+	for(*i = 0; *i < *qtd; *i++){
 
-		while(*c != '\0'){
-			printf("%c", *c);
-			c += 1*sizeof(char);
-		}
-		printf("\n");
+		printf("registro %d, letra: %c", *i, *c);
+
+		c += 1*sizeof(char);
+		//c = (char *)(pBuffer + 3*sizeof(int) + *i*(10*sizeof(char)));
+
 	}
 }
