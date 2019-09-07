@@ -4,33 +4,34 @@
 void menu(int *opcao);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
+void realocar(void *pBuffer);
 
 int main(){
 	void *pBuffer = NULL;
-	int *tam, *qtd;
-	pBuffer = (void *)malloc(3*sizeof(int));
-
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//quantidade de registros
+	int *opcao,*qtd, *tam;
+	
+	pBuffer = (void *)malloc(3*sizeof(int) + 33*sizeof(char));
+	opcao = (int *)pBuffer;
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//num de elementos
 	tam = (int *)(pBuffer + (2 * sizeof(int)));		//tamanho do pBuffer
+	
 	*qtd = 0;
-	*tam = (3*sizeof(int));
-
+	*tam = (3 * sizeof(int));
+	
 	do{
-		menu((int *)pBuffer);
-		switch(*(int *)pBuffer){
+		menu(opcao);
+		switch(*opcao){
 			case 1:
-				//*(int *)(pBuffer + (1 * sizeof(int))) += 1;
 				inserir(pBuffer);
 				break;
 			case 2:
-				//imprimir(pBuffer);
-				printf("%d\n", *(int *)(pBuffer + sizeof(int)));
+				imprimir(pBuffer);
 				break;
 			case 3:
 				printf("saindo...\n");
 				break;
 		}
-	}while((*(int *)pBuffer) != 3);
+	}while(*opcao != 3);
 	
 	free(pBuffer);
 	return 0;
@@ -49,40 +50,57 @@ void menu(int *opcao){
 
 void inserir(void *pBuffer){
 	char *c;
-	int *tam, *qtd;
+	int *qtd, *tam;
 
-	//qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-
-	*tam += 10*sizeof(char);
-
-	pBuffer = realloc(pBuffer, *tam);
-	//c = (char *)(pBuffer + *tam + 1*sizeof(char));
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
-
+	*tam += (11*sizeof(char));
+	if(*qtd > 3){
+		realocar(pBuffer);
+	}
+	
+	//realocar(pBuffer);
+	
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	c = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*11*sizeof(char));
+	
 	*qtd += 1;
-
-	//getchar();
-	//*c = getchar();
-	printf("%d %d", *qtd, *tam);
-
-
+	printf("%d %d %p %p %p\n", *qtd, *tam, qtd, tam, c);
+	
+	getchar();
+	printf("nome: ");
+	while((*c = getchar()) != '\n'){
+		c += sizeof(char);
+	}
+	*c = '\0';
+	
 }
 
 void imprimir(void *pBuffer){
+	int *i, *qtd;
 	char *c;
-	int *i, *tam, *qtd;
+	
+	i = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	c = (char *)(pBuffer + (2*sizeof(int)) + (1*sizeof(char)));
-
-	for(*i = 0; *i < *qtd; *i++){
-
-		printf("registro %d, letra: %c", *i, *c);
-		c = (char *)(pBuffer + (2*sizeof(int)) + *i*(1*sizeof(char)) + (1*sizeof(char)));
-		//c += 1*sizeof(char);
-		//c = (char *)(pBuffer + 3*sizeof(int) + *i*(10*sizeof(char)));
-
+	
+	for(*i = 0; *i < *qtd; *i += 1){
+		c = (char *)(pBuffer + (3 * sizeof(int)) + *i*11*sizeof(char));
+		
+		printf("registro %d, nome: ", *i);
+		do{
+			putchar(*c);
+			c += sizeof(char);
+		}while(*c != '\0');
+		
+		printf("\n");
 	}
+	
+}
+
+void realocar(void *pBuffer){
+	int *qtd, *tam;
+
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+	*tam += (11*sizeof(char));
+	pBuffer = realloc(pBuffer,*tam);
 }
