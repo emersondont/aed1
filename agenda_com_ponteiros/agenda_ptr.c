@@ -4,13 +4,12 @@
 void menu(int *opcao);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
-void realocar(void *pBuffer);
 
 int main(){
 	void *pBuffer = NULL;
 	int *opcao,*qtd, *tam;
 	
-	pBuffer = (void *)malloc(3*sizeof(int) + 33*sizeof(char));
+	pBuffer = (void *)malloc(3*sizeof(int) /*+ 11*sizeof(char)*/);
 	opcao = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//num de elementos
 	tam = (int *)(pBuffer + (2 * sizeof(int)));		//tamanho do pBuffer
@@ -52,28 +51,30 @@ void inserir(void *pBuffer){
 	char *c;
 	int *qtd, *tam;
 
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
 	*tam += (11*sizeof(char));
-	if(*qtd > 3){
-		realocar(pBuffer);
+
+	pBuffer = realloc(pBuffer,*tam);		//eu odeio o relloc
+	if(pBuffer == NULL){
+		printf("ERRO AO TENTAR REALOCAR");
+		exit(1);
 	}
 	
-	//realocar(pBuffer);
-	
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
 	c = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*11*sizeof(char));
-	
+
+	//printf("%d %d %p %p %p\n", *qtd, *tam, qtd, tam, c);
 	*qtd += 1;
 	printf("%d %d %p %p %p\n", *qtd, *tam, qtd, tam, c);
 	
-	getchar();
+	/*getchar();
 	printf("nome: ");
 	while((*c = getchar()) != '\n'){
 		c += sizeof(char);
 	}
 	*c = '\0';
-	
+	*/
 }
 
 void imprimir(void *pBuffer){
@@ -95,12 +96,4 @@ void imprimir(void *pBuffer){
 		printf("\n");
 	}
 	
-}
-
-void realocar(void *pBuffer){
-	int *qtd, *tam;
-
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	*tam += (11*sizeof(char));
-	pBuffer = realloc(pBuffer,*tam);
 }
