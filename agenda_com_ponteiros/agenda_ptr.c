@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 void menu(int *opcao);
+void lerString(char *c);
+void imprimirString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 
@@ -9,7 +11,7 @@ int main(){
 	void *pBuffer = NULL;
 	int *opcao,*qtd, *tam;
 	
-	pBuffer = (void *)malloc(3*sizeof(int) + 10*(20*sizeof(char) + sizeof(unsigned int)));
+	pBuffer = (void *)malloc(3*sizeof(int) + 0*(20*sizeof(char) + 11*sizeof(char)));
 	opcao = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));	//num de elementos
 	tam = (int *)(pBuffer + (2 * sizeof(int))); //tamanho do pBuffer
@@ -21,6 +23,8 @@ int main(){
 		menu(opcao);
 		switch(*opcao){
 			case 1:
+				*tam += ((20*sizeof(char) + 11*sizeof(char)));
+				pBuffer = (void *)realloc(pBuffer, *tam);
 				inserir(pBuffer);
 				break;
 			case 2:
@@ -47,54 +51,54 @@ void menu(int *opcao){
 	}while((*opcao <= 0) || (*opcao > 3));
 }
 
-void inserir(void *pBuffer){
-	char *c;
-	int *qtd, *tam;
-	unsigned int *contato;
-	
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	c = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*(20*sizeof(char) + sizeof(unsigned int)));
-	contato = (unsigned int *)(c + 20*sizeof(char));
-	
-	printf("%p %p %p %p\n", qtd, tam, c, contato);
-	
-	*tam += ((20*sizeof(char) + sizeof(unsigned int)));
-	*qtd += 1;
-	
-	getchar();
-	printf("nome: ");
+void lerString(char *c){
 	while((*c = getchar()) != '\n'){
 		c += sizeof(char);
 	}
 	*c = '\0';
+}
+void imprimirString(char *c){
+	do{
+		putchar(*c);
+		c += sizeof(char);
+	}while(*c != '\0');
+	putchar('\n');
+}
+
+void inserir(void *pBuffer){
+	char *cNome, *cData;
+	int *qtd, *tam;
 	
-	printf("numero: ");
-	scanf("%d", contato);
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	cNome = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*(20*sizeof(char) + 11*sizeof(char)));
+	cData = (char *)(cNome + 20*sizeof(char));
 	
+	*qtd += 1;
+	
+	getchar();
+	printf("nome: ");
+	lerString(cNome);
+	printf("data de nascimento: ");
+	lerString(cData);
 }
 
 void imprimir(void *pBuffer){
 	int *i, *qtd;
-	char *c;
-	unsigned int *contato;
+	char *cNome, *cData;
 	
 	i = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	
 	for(*i = 0; *i < *qtd; *i += 1){
-		c = (char *)(pBuffer + (3 * sizeof(int)) + *i*(20*sizeof(char) + sizeof(unsigned int)));
-		contato = (unsigned int *)(c + 20*sizeof(char));
+		cNome = (char *)(pBuffer + (3 * sizeof(int)) + *i*(20*sizeof(char) + 11*sizeof(char)));
+		cData = (char *)(cNome + 20*sizeof(char));
 	
-		
-		printf("registro %d, nome: ", *i);
-		do{
-			putchar(*c);
-			c += sizeof(char);
-		}while(*c != '\0');
-		
-		printf("\n\t\t\tnumero: %d\n", *contato);
+		printf("Registro %d\n\tNome: ", *i);
+		imprimirString(cNome);
+		printf("\tData de nascimento: ");
+		imprimirString(cData);
 	}
 	*i = 0;
 }
+
 
