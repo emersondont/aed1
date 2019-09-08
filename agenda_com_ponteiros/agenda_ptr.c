@@ -9,10 +9,10 @@ int main(){
 	void *pBuffer = NULL;
 	int *opcao,*qtd, *tam;
 	
-	pBuffer = (void *)malloc(3*sizeof(int) /*+ 11*sizeof(char)*/);
+	pBuffer = (void *)malloc(3*sizeof(int) + 10*(20*sizeof(char) + sizeof(unsigned int)));
 	opcao = (int *)pBuffer;
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//num de elementos
-	tam = (int *)(pBuffer + (2 * sizeof(int)));		//tamanho do pBuffer
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));	//num de elementos
+	tam = (int *)(pBuffer + (2 * sizeof(int))); //tamanho do pBuffer
 	
 	*qtd = 0;
 	*tam = (3 * sizeof(int));
@@ -50,42 +50,42 @@ void menu(int *opcao){
 void inserir(void *pBuffer){
 	char *c;
 	int *qtd, *tam;
-
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	*tam += (11*sizeof(char));
-
-	pBuffer = realloc(pBuffer,*tam);		//eu odeio o relloc
-	if(pBuffer == NULL){
-		printf("ERRO AO TENTAR REALOCAR");
-		exit(1);
-	}
+	unsigned int *contato;
 	
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	c = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*11*sizeof(char));
-
-	//printf("%d %d %p %p %p\n", *qtd, *tam, qtd, tam, c);
-	*qtd += 1;
-	printf("%d %d %p %p %p\n", *qtd, *tam, qtd, tam, c);
+	c = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*(20*sizeof(char) + sizeof(unsigned int)));
+	contato = (unsigned int *)(c + 20*sizeof(char));
 	
-	/*getchar();
+	printf("%p %p %p %p\n", qtd, tam, c, contato);
+	
+	*tam += ((20*sizeof(char) + sizeof(unsigned int)));
+	*qtd += 1;
+	
+	getchar();
 	printf("nome: ");
 	while((*c = getchar()) != '\n'){
 		c += sizeof(char);
 	}
 	*c = '\0';
-	*/
+	
+	printf("numero: ");
+	scanf("%d", contato);
+	
 }
 
 void imprimir(void *pBuffer){
 	int *i, *qtd;
 	char *c;
+	unsigned int *contato;
 	
 	i = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	
 	for(*i = 0; *i < *qtd; *i += 1){
-		c = (char *)(pBuffer + (3 * sizeof(int)) + *i*11*sizeof(char));
+		c = (char *)(pBuffer + (3 * sizeof(int)) + *i*(20*sizeof(char) + sizeof(unsigned int)));
+		contato = (unsigned int *)(c + 20*sizeof(char));
+	
 		
 		printf("registro %d, nome: ", *i);
 		do{
@@ -93,7 +93,8 @@ void imprimir(void *pBuffer){
 			c += sizeof(char);
 		}while(*c != '\0');
 		
-		printf("\n");
+		printf("\n\t\t\tnumero: %d\n", *contato);
 	}
-	
+	*i = 0;
 }
+
