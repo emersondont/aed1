@@ -1,6 +1,0 @@
-primeiro inteiro para as opcoes e como um aux
-segundo inteiro para a quantidades de registros
-terceiro inteiro para guardar o tamanho do pBuffer
-
-20 char para o nome
-11 char para a data de nascimento

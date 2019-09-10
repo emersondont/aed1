@@ -1,8 +1,27 @@
-﻿#include <stdio.h>
-#include <stdlib.h>
+﻿/*
+AGENDA SOMENTE COM PONTEIROS / DISCIPLINA DE ALGORITMOS E ESTRUTURA DE DADOS
 
-//Tam de cada registro = (20*sizeof(char) + 11*sizeof(char) + 12*sizeof(char))
-//							nome 			data nasc 			cpf
+Registro:
+{
+ 	char nome[30];
+	unsigned short int idade;	//pq ningém vai ter mais de 65.535 anos
+	char telefone[15];
+} 	
+
+tamanho de cada registro: (30*sizeof(char) + sizeof(unsigned short int) + sizeof(unsigned long int)
+
+void *pBuffer:
+{
+	1ª posição do pBuffer é um inteiro para a opcao / tambem como uma variavel para o controle do for
+	2ª posição do pBuffer é um inteiro que guarda a quantidade de registros
+	3ª posição do pBuffer é um inteiro que guarda o tamanho do pBuffer
+}
+
+*/
+
+
+#include <stdio.h>
+#include <stdlib.h>
 
 void menu(int *opcao);
 void lerString(char *c);
@@ -13,12 +32,12 @@ void salvaArq(void *pBuffer);
 void lerArq(void *pBuffer);
 
 int main(){
-	void *pBuffer = NULL;
-	int *opcao,*qtd, *tam;
+	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
+	int *opcao, *qtd, *tam;
 	
-	pBuffer = (void *)malloc(3*sizeof(int) /*+ 2*(20*sizeof(char) + 11*sizeof(char))*/);
+	pBuffer = (void *)malloc(3 * sizeof(int));		//aloca os 3 inteiros iniciais
 	opcao = (int *)pBuffer;
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//num de elementos
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//numero de elementos
 	tam = (int *)(pBuffer + (2 * sizeof(int))); 	//tamanho do pBuffer
 	
 	*qtd = 0;
@@ -30,7 +49,7 @@ int main(){
 		menu(opcao);
 		switch(*opcao){
 			case 1:
-				*tam += ((20*sizeof(char) + 11*sizeof(char)));
+				*tam += (45*sizeof(char) + sizeof(unsigned short int));	//aumenta tamanho p mais um registro
 				pBuffer = (void *)realloc(pBuffer, *tam);
 				inserir(pBuffer);
 				break;
@@ -76,37 +95,49 @@ void imprimirString(char *c){
 }
 
 void inserir(void *pBuffer){
-	char *cNome, *cData;
+	char *cNome, *cTelefone;
+	unsigned short int *idade;
 	int *qtd;
 	
+	//posiciona os ponteiros
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	cNome = (char *)(pBuffer + (3 * sizeof(int)) + *qtd*(20*sizeof(char) + 11*sizeof(char)));
-	cData = (char *)(cNome + 20*sizeof(char));
+	cNome = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));	//1º caracter do nome
+	idade = (unsigned short int *)(cNome + 30 * sizeof(char));
+	cTelefone = (char *)(idade + sizeof(unsigned short int));
 
 	*qtd += 1;
 	
+	//ler os dados
 	getchar();
 	printf("nome: ");
 	lerString(cNome);
-	printf("data de nascimento: ");
-	lerString(cData);
+	printf("idade: ");
+	scanf("%hu", idade);
+	getchar();
+	printf("telefone: ");
+	lerString(cTelefone);
 }
 
 void imprimir(void *pBuffer){
-	int *i, *qtd;
-	char *cNome, *cData;
+	char *cNome, *cTelefone;
+	unsigned short int *idade;
+	int *qtd, *i;
 	
 	i = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	
 	for(*i = 0; *i < *qtd; *i += 1){
-		cNome = (char *)(pBuffer + (3 * sizeof(int)) + *i*(20*sizeof(char) + 11*sizeof(char)));
-		cData = (char *)(cNome + 20*sizeof(char));
+		cNome = (char *)(pBuffer + 3 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//1º caracter do nome
+		idade = (unsigned short int *)(cNome + 30 * sizeof(char));
+		cTelefone = (char *)(idade + sizeof(unsigned short int));
 	
-		printf("Registro %d\n\tNome: ", *i);
+		printf("Registro %d\n", *i);
+		printf("\tNome....: ");
 		imprimirString(cNome);
-		printf("\tData de nascimento: ");
-		imprimirString(cData);
+		printf("\tidade...: %hu\n", *idade);
+		printf("\tTelefone: ");
+		imprimirString(cTelefone);
+		printf("----------------------------------\n");
 	}
 	*i = 0;
 }
