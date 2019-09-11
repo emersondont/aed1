@@ -37,7 +37,6 @@ int main(){
 	int *opcao, *qtd, *tam;
 	
 	pBuffer = (void *)malloc(4 * sizeof(int));		//aloca os 3 inteiros iniciais
-	opcao = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//numero de elementos
 	tam = (int *)(pBuffer + (2 * sizeof(int))); 	//tamanho do pBuffer
 	
@@ -47,6 +46,9 @@ int main(){
 	//lerArq(pBuffer);
 
 	do{
+		opcao = (int *)pBuffer;
+		tam = (int *)(pBuffer + (2 * sizeof(int)));
+
 		menu(opcao);
 		switch(*opcao){
 			case 1:
@@ -59,16 +61,16 @@ int main(){
 				break;
 			case 3:
 				pBuffer = realloc(pBuffer, *tam + 30*sizeof(char));		//aumenta mais um tam nome
+				opcao = (int *)pBuffer;
+			case 4:
 				procurar(pBuffer);
 				break;
-			//case 4:
-			//	break;
-			case 4:
+			case 5:
 				//salvaArq(pBuffer);
 				printf("saindo...\n");
 				break;
 		}
-	}while(*opcao != 4);
+	}while(*opcao != 5);
 
 	free(pBuffer);
 
@@ -81,10 +83,11 @@ void menu(int *opcao){
 		printf("\t1 - insert\n");
 		printf("\t2 - print\n");
 		printf("\t3 - search for\n");
-		printf("\t4 - exit\n");
+		printf("\t4 - delete\n");
+		printf("\t5 - exit\n");
 		printf("opcao: ");
 		scanf("%d", opcao);
-	}while((*opcao <= 0) || (*opcao > 4));
+	}while((*opcao <= 0) || (*opcao > 5));
 }
 
 void lerString(char *c){
@@ -156,13 +159,12 @@ void procurar(void *pBuffer){
 	char *cNome, *cNomeDigitado, *cTelefone;
 	unsigned short int *idade;
 
-	opcao = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
 	i = (int *)(pBuffer + (3 * sizeof(int)));
 
 	if(*qtd == 0){
-		printf("Nao tem ninguem na agenda");
+		printf("A agenda esta vazia");
 		return;
 	}
 
@@ -182,29 +184,36 @@ void procurar(void *pBuffer){
 			cNomeDigitado += sizeof(char);
 		}
 		//se sair do while é porque: 1 - os caracter comparados são diferentes, então não é este o registro que estamos procurando
-		//2 - chegou ao fim de umas dos nomes ou dos dois
-		if(*cNome == *cNomeDigitado){	//se chegar aqui e for verdadeiro o if, quer dizer que os nomes são iguais
+		//2 - chegou ao fim de um dos nomes ou dos dois
+		if(*cNome == *cNomeDigitado){			//se chegar aqui e for verdadeiro o if, quer dizer que os nomes são iguais
+			pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
 			cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//aponta pro ini de novo
 			idade = (unsigned short int *)(cNome + 30 * sizeof(char));
 			cTelefone = (char *)(idade + sizeof(unsigned short int));
 			break;	//sai do for
 		}
 		else if(*i == (*qtd -1)){
-			printf("Registro não encontrado");
+			printf("Registro não encontrado ");
+			//printf("%c %c", *cNome, *cNomeDigitado);
 			pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
 			return;
 		}
 	}
 
-	
-	printf("Registro %d\n", *i);
-	printf("\tNome....: ");
-	imprimirString(cNome);
-	printf("\tidade...: %hu\n", *idade);
-	printf("\tTelefone: ");
-	imprimirString(cTelefone);
-	
+	opcao = (int *)pBuffer;
 
+	if(*opcao == 3){
+		printf("Registro %d\n", *i);
+		printf("\tNome....: ");
+		imprimirString(cNome);
+		printf("\tidade...: %hu\n", *idade);
+		printf("\tTelefone: ");
+		imprimirString(cTelefone);
+	}
+	else if(*opcao == 4){
+		printf("remover o cara");
+	}
+	
 
 }
 
