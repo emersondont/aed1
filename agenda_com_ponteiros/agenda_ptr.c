@@ -8,7 +8,7 @@ Registro:
 	char telefone[15];
 } 	
 
-tamanho de cada registro: (30*sizeof(char) + sizeof(unsigned short int) + sizeof(unsigned long int)
+tamanho de cada registro: (35*sizeof(char) + sizeof(unsigned short int)
 
 void *pBuffer:
 {
@@ -29,8 +29,8 @@ void imprimirString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
-void salvaArq(void *pBuffer);
-void lerArq(void *pBuffer);
+//void salvaArq(void *pBuffer);
+//void lerArq(void *pBuffer);
 
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
@@ -60,9 +60,9 @@ int main(){
 				imprimir(pBuffer);
 				break;
 			case 3:
+			case 4:
 				pBuffer = realloc(pBuffer, *tam + 30*sizeof(char));		//aumenta mais um tam nome
 				opcao = (int *)pBuffer;
-			case 4:
 				procurar(pBuffer);
 				break;
 			case 5:
@@ -194,7 +194,7 @@ void procurar(void *pBuffer){
 		}
 		else if(*i == (*qtd -1)){
 			printf("Registro não encontrado ");
-			//printf("%c %c", *cNome, *cNomeDigitado);
+			printf("%c %c", *cNome, *cNomeDigitado);
 			pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
 			return;
 		}
