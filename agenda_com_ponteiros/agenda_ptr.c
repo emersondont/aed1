@@ -29,8 +29,7 @@ void imprimirString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
-//void salvaArq(void *pBuffer);
-//void lerArq(void *pBuffer);
+void trocarRegistros(char *c1, char *c2, char *cA);
 
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
@@ -186,7 +185,7 @@ void procurar(void *pBuffer){
 		//se sair do while é porque: 1 - os caracter comparados são diferentes, então não é este o registro que estamos procurando
 		//2 - chegou ao fim de um dos nomes ou dos dois
 		if(*cNome == *cNomeDigitado){			//se chegar aqui e for verdadeiro o if, quer dizer que os nomes são iguais
-			pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
+			//pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
 			cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//aponta pro ini de novo
 			idade = (unsigned short int *)(cNome + 30 * sizeof(char));
 			cTelefone = (char *)(idade + sizeof(unsigned short int));
@@ -201,6 +200,7 @@ void procurar(void *pBuffer){
 	}
 
 	opcao = (int *)pBuffer;
+	char *c2;
 
 	if(*opcao == 3){
 		printf("Registro %d\n", *i);
@@ -212,100 +212,29 @@ void procurar(void *pBuffer){
 	}
 	else if(*opcao == 4){
 		printf("remover o cara");
+		c2 = (cNome + 45*sizeof(char) + sizeof(unsigned short int));
+		//cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
+		//trocarRegistros(cNome, cNomeDigitado, c2);
+		imprimirString(cNome);
+		imprimirString(c2);
 	}
 	
 
 }
 
+void trocarRegistros(char *c1, char *c2, char *cA){
+
+	do{
+		*cA =  *c1;
+		*c1 = *c2;
+		*c2 = *cA;
+
+		c1 += sizeof(char);
+		c2 += sizeof(char);
+		printf("\n%c %c", *c1, *c2);
+	}while( ((*c2 - sizeof(char)) != '\0') && (*(c1 -  sizeof(char)) != '\0') );
 
 
 
 
-
-
-/*
-void salvaArq(void *pBuffer){
-	char *cNome, *cData;
-	int *qtd, *i;
-	FILE *saida;
-
-	i = (int *)pBuffer;
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-
-	if((saida = fopen("backup.txt", "w")) == NULL){
-		printf("erro ao salvar o arquivo!");
-		return;
-	}
-
-	fprintf(saida, "%d\n", *qtd);
-
-	for(*i = 0; *i < *qtd; *i += 1){
-		cNome = (char *)(pBuffer + (3 * sizeof(int)) + *i*(20*sizeof(char) + 11*sizeof(char)));
-		cData = (char *)(cNome + 20*sizeof(char));
-
-		do{
-			fprintf(saida, "%c", *cNome);
-			cNome += sizeof(char);
-		}while(*cNome != '\0');
-
-		fprintf(saida, "\n");
-
-		do{
-			fprintf(saida, "%c", *cData);
-			cData += sizeof(char);
-		}while(*cData != '\0');
-
-		fprintf(saida, "\n");
-	}
-
-	*i = 3;
-
-	fclose(saida);
 }
-
-void lerArq(void *pBuffer){
-	char *cNome, *cData;
-	int *op, *i, *qtd, *tam;
-	FILE *entrada;
-
-	op = (int *)pBuffer;
-	printf("press 1 to read from file ");
-	scanf("%d", op);
-	if(*op != 1)
-		return;
-
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-
-	if((entrada = fopen("backup.txt", "r")) == NULL){
-		printf("erro ao abrir o arquivo!");
-		return;
-	}
-
-	fscanf(entrada, "%d", qtd);
-	*tam += *qtd * ((20*sizeof(char) + 11*sizeof(char)));
-	pBuffer = (void *)realloc(pBuffer, *tam);
-
-	i = (int *)pBuffer;
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-
-	//
-	fgetc(entrada);
-	for(*i = 0; *i < *qtd; *i += 1){
-		cNome = (char *)(pBuffer + (3 * sizeof(int)) + *i*(20*sizeof(char) + 11*sizeof(char)));
-		cData = (char *)(cNome + 20*sizeof(char));
-
-		while((*cNome = fgetc(entrada)) != '\n'){
-			cNome += 1*sizeof(char);
-		}
-		*cNome = '\0';
-
-		while((*cData = fgetc(entrada)) != '\n'){
-			cData += 1*sizeof(char);
-		}
-		*cData = '\0';
-	}
-	
-	fclose(entrada);
-}
-*/
