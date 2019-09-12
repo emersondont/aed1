@@ -8,7 +8,7 @@ Registro:
 	char telefone[15];
 } 	
 
-tamanho de cada registro: (35*sizeof(char) + sizeof(unsigned short int)
+tamanho de cada registro: (45*sizeof(char) + sizeof(unsigned short int)
 
 void *pBuffer:
 {
@@ -55,10 +55,11 @@ int main(){
 				break;
 			case 2:
 				imprimir(pBuffer);
+				printf("%d", *tam);
 				break;
 			case 3:
 			case 4:
-				pBuffer = realloc(pBuffer, *tam + (35*sizeof(char) + sizeof(unsigned short int)));		//aumenta mais um tam nome
+				pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)));		//aumenta mais um tam nome
 				opcao = (int *)pBuffer;
 				procurar(pBuffer);
 				break;
@@ -219,7 +220,7 @@ void procurar(void *pBuffer){
 			cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
 		}
 
-		*tam -= 1*(45*sizeof(char) + sizeof(unsigned short int));
+		*tam -= (45*sizeof(char) + sizeof(unsigned short int));
 		*qtd -= 1;
 		pBuffer = realloc(pBuffer, *tam);
 	}
