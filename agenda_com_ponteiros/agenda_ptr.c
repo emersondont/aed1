@@ -219,9 +219,11 @@ void procurar(void *pBuffer){
 			printf("%d ", *i);
 			trocarRegistros(cNome, c2, cNomeDigitado);
 
+			cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));
+			c2 = (char *)(cNome + 45*sizeof(char) + sizeof(unsigned short int));
+
 			cNome = (c2 + (45*sizeof(char) + sizeof(unsigned short int)));
 			c2 = (cNome + (45*sizeof(char) + sizeof(unsigned short int)));
-			cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
 		}
 
 		*tam -= (45*sizeof(char) + sizeof(unsigned short int));
