@@ -42,8 +42,6 @@ int main(){
 	*qtd = 0;
 	*tam = (4 * sizeof(int));
 
-	//lerArq(pBuffer);
-
 	do{
 		opcao = (int *)pBuffer;
 		tam = (int *)(pBuffer + (2 * sizeof(int)));
@@ -60,12 +58,11 @@ int main(){
 				break;
 			case 3:
 			case 4:
-				pBuffer = realloc(pBuffer, *tam + 30*sizeof(char));		//aumenta mais um tam nome
+				pBuffer = realloc(pBuffer, *tam + (35*sizeof(char) + sizeof(unsigned short int)));		//aumenta mais um tam nome
 				opcao = (int *)pBuffer;
 				procurar(pBuffer);
 				break;
 			case 5:
-				//salvaArq(pBuffer);
 				printf("saindo...\n");
 				break;
 		}
@@ -177,7 +174,8 @@ void procurar(void *pBuffer){
 
 	for(*i = 0; *i < *qtd; *i += 1){
 		cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));
-		
+		cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
+
 		while((*cNome == *cNomeDigitado) && (*cNome  != '\0') && (*cNomeDigitado != '\0')){
 			cNome += sizeof(char);
 			cNomeDigitado += sizeof(char);
@@ -193,7 +191,6 @@ void procurar(void *pBuffer){
 		}
 		else if(*i == (*qtd -1)){
 			printf("Registro não encontrado ");
-			printf("%c %c", *cNome, *cNomeDigitado);
 			pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
 			return;
 		}
@@ -211,19 +208,36 @@ void procurar(void *pBuffer){
 		imprimirString(cTelefone);
 	}
 	else if(*opcao == 4){
-		printf("remover o cara");
 		c2 = (cNome + 45*sizeof(char) + sizeof(unsigned short int));
-		//cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
-		//trocarRegistros(cNome, cNomeDigitado, c2);
-		imprimirString(cNome);
-		imprimirString(c2);
+		cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
+		//trocarRegistros(cNome, c2, cNomeDigitado);
+
+		for(*i = 0; *i < (*qtd - 1); *i += 1){
+			trocarRegistros(cNome, c2, cNomeDigitado);
+			cNome = (c2 + (35*sizeof(char) + sizeof(unsigned short int)));
+			c2 = (cNome + (35*sizeof(char) + sizeof(unsigned short int)));
+			cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
+		}
+
+		*tam -= 1*(45*sizeof(char) + sizeof(unsigned short int));
+		*qtd -= 1;
+		pBuffer = realloc(pBuffer, *tam);
 	}
 	
 
 }
 
 void trocarRegistros(char *c1, char *c2, char *cA){
-
+	char *t1, *t2, *tA;
+	unsigned short int *i1, *i2, *iA;
+	i1 = (unsigned short int *)(c1 + 30*sizeof(char));
+	i2 = (unsigned short int *)(c2 + 30*sizeof(char));
+	iA = (unsigned short int *)(cA + 30*sizeof(char));
+	
+	t1 = (char *)(i1 + sizeof(unsigned short int));
+	t2 = (char *)(i2 + sizeof(unsigned short int));
+	tA = (char *)(iA + sizeof(unsigned short int));
+	
 	do{
 		*cA =  *c1;
 		*c1 = *c2;
@@ -231,10 +245,67 @@ void trocarRegistros(char *c1, char *c2, char *cA){
 
 		c1 += sizeof(char);
 		c2 += sizeof(char);
-		printf("\n%c %c", *c1, *c2);
-	}while( ((*c2 - sizeof(char)) != '\0') && (*(c1 -  sizeof(char)) != '\0') );
+	}while( (*(c2 - sizeof(char)) != '\0') && (*(c1 -  sizeof(char)) != '\0') );
+
+	if(*(c2 - sizeof(char)) == '\0'){
+		while(*(c1 -  sizeof(char)) != '\0'){
+		*cA =  *c1;
+		*c1 = *c2;
+		*c2 = *cA;
+
+		c1 += sizeof(char);
+		c2 += sizeof(char);
+		}
+	}
+
+	else if(*(c1 - sizeof(char)) == '\0'){
+		while(*(c2 -  sizeof(char)) != '\0'){
+		*cA =  *c1;
+		*c1 = *c2;
+		*c2 = *cA;
+
+		c1 += sizeof(char);
+		c2 += sizeof(char);
+		}
+	}
+	//ate aqui p/ trocar os nomes
+	*iA = *i1;
+	*i1 = *i2;
+	*i2 = *iA;
+	//termina de trocar as idades
+
+	do{
+		*tA =  *t1;
+		*t1 = *t2;
+		*t2 = *tA;
+
+		t1 += sizeof(char);
+		t2 += sizeof(char);
+	}while( (*(t2 - sizeof(char)) != '\0') && (*(t1 -  sizeof(char)) != '\0') );
+
+	if(*(t2 - sizeof(char)) == '\0'){
+		while(*(t1 -  sizeof(char)) != '\0'){
+		*tA =  *t1;
+		*t1 = *t2;
+		*t2 = *tA;
+
+		t1 += sizeof(char);
+		t2 += sizeof(char);
+		}
+	}
+
+	else if(*(t1 - sizeof(char)) == '\0'){
+		while(*(t2 -  sizeof(char)) != '\0'){
+		*tA =  *t1;
+		*t1 = *t2;
+		*t2 = *tA;
+
+		t1 += sizeof(char);
+		t2 += sizeof(char);
+		}
+	}
+	//termina de trocar os telefone
 
 
-
-
+	//eu sei que essa funcao ficou uma bagunça, calma que vou arrumar
 }
