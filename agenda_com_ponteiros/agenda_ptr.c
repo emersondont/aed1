@@ -30,6 +30,7 @@ void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
 void trocarRegistros(char *c1, char *c2, char *cA);
+void trocarStringsDeRegistros(char *c1, char *c2, char *cA);
 
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
@@ -50,12 +51,12 @@ int main(){
 		switch(*opcao){
 			case 1:
 				*tam += (45*sizeof(char) + sizeof(unsigned short int));	//aumenta tamanho p/ mais um registro
-				pBuffer = (void *)realloc(pBuffer, *tam);
+				pBuffer = realloc(pBuffer, *tam);
 				inserir(pBuffer);
 				break;
 			case 2:
 				imprimir(pBuffer);
-				printf("%d", *tam);
+				//printf("%d", *tam);
 				break;
 			case 3:
 			case 4:
@@ -75,7 +76,9 @@ int main(){
 }
 
 void menu(int *opcao){
-	printf("\n# MENU DE OPCOES #\n");
+	printf("\n|------------------|");
+	printf("\n|  MENU DE OPCOES  |");
+	printf("\n|------------------|\n");
 	do{
 		printf("\t1 - insert\n");
 		printf("\t2 - print\n");
@@ -153,7 +156,8 @@ void imprimir(void *pBuffer){
 
 void procurar(void *pBuffer){
 	int *opcao, *qtd, *tam, *i;
-	char *cNome, *cNomeDigitado, *cTelefone;
+	char *cNome,  *cTelefone;
+	char *cNomeDigitado;	//char aux para ler o nome do registro a ser excluido ou impresso
 	unsigned short int *idade;
 
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
@@ -184,7 +188,6 @@ void procurar(void *pBuffer){
 		//se sair do while é porque: 1 - os caracter comparados são diferentes, então não é este o registro que estamos procurando
 		//2 - chegou ao fim de um dos nomes ou dos dois
 		if(*cNome == *cNomeDigitado){			//se chegar aqui e for verdadeiro o if, quer dizer que os nomes são iguais
-			//pBuffer = realloc(pBuffer, *tam);	//volta para o tamanho original
 			cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//aponta pro ini de novo
 			idade = (unsigned short int *)(cNome + 30 * sizeof(char));
 			cTelefone = (char *)(idade + sizeof(unsigned short int));
@@ -198,7 +201,7 @@ void procurar(void *pBuffer){
 	}
 
 	opcao = (int *)pBuffer;
-	char *c2;
+	char *c2;	//char para o nome do registro apos o que vai ser excluido
 
 	if(*opcao == 3){
 		printf("Registro %d\n", *i);
@@ -209,23 +212,24 @@ void procurar(void *pBuffer){
 		imprimirString(cTelefone);
 	}
 	else if(*opcao == 4){
-		c2 = (cNome + 45*sizeof(char) + sizeof(unsigned short int));
+		c2 = (char *)(cNome + 45*sizeof(char) + sizeof(unsigned short int));
 		cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
-		//trocarRegistros(cNome, c2, cNomeDigitado);
 
-		for(*i = 0; *i < (*qtd - 1); *i += 1){
+		for(; *i < *qtd; *i += 1){
+			printf("%d ", *i);
 			trocarRegistros(cNome, c2, cNomeDigitado);
-			cNome = (c2 + (35*sizeof(char) + sizeof(unsigned short int)));
-			c2 = (cNome + (35*sizeof(char) + sizeof(unsigned short int)));
+
+			cNome = (c2 + (45*sizeof(char) + sizeof(unsigned short int)));
+			c2 = (cNome + (45*sizeof(char) + sizeof(unsigned short int)));
 			cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
 		}
 
 		*tam -= (45*sizeof(char) + sizeof(unsigned short int));
 		*qtd -= 1;
-		pBuffer = realloc(pBuffer, *tam);
 	}
-	
 
+	pBuffer = realloc(pBuffer, *tam);
+	
 }
 
 void trocarRegistros(char *c1, char *c2, char *cA){
@@ -239,6 +243,54 @@ void trocarRegistros(char *c1, char *c2, char *cA){
 	t2 = (char *)(i2 + sizeof(unsigned short int));
 	tA = (char *)(iA + sizeof(unsigned short int));
 	
+	//trocar os nomes dos registros
+	trocarStringsDeRegistros(c1, c2, cA);
+	
+	//trocar as idades dos registros
+	*iA = *i1;
+	*i1 = *i2;
+	*i2 = *iA;
+
+	//trocar os telefone dos geristros
+	trocarStringsDeRegistros(t1, t2, tA);
+	
+ 	/*
+	do{
+		*tA =  *t1;
+		*t1 = *t2;
+		*t2 = *tA;
+
+		t1 += sizeof(char);
+		t2 += sizeof(char);
+	}while( (*(t2 - sizeof(char)) != '\0') && (*(t1 -  sizeof(char)) != '\0') );
+
+	if(*(t2 - sizeof(char)) == '\0'){
+		while(*(t1 -  sizeof(char)) != '\0'){
+		*tA =  *t1;
+		*t1 = *t2;
+		*t2 = *tA;
+
+		t1 += sizeof(char);
+		t2 += sizeof(char);
+		}
+	}
+
+	else if(*(t1 - sizeof(char)) == '\0'){
+		while(*(t2 -  sizeof(char)) != '\0'){
+		*tA =  *t1;
+		*t1 = *t2;
+		*t2 = *tA;
+
+		t1 += sizeof(char);
+		t2 += sizeof(char);
+		}
+	}*/
+
+
+	//eu sei que essa funcao ficou uma bagunça, calma que vou arrumar
+}
+
+void trocarStringsDeRegistros(char *c1, char *c2, char *cA){
 	do{
 		*cA =  *c1;
 		*c1 = *c2;
@@ -269,44 +321,4 @@ void trocarRegistros(char *c1, char *c2, char *cA){
 		c2 += sizeof(char);
 		}
 	}
-	//ate aqui p/ trocar os nomes
-	*iA = *i1;
-	*i1 = *i2;
-	*i2 = *iA;
-	//termina de trocar as idades
-
-	do{
-		*tA =  *t1;
-		*t1 = *t2;
-		*t2 = *tA;
-
-		t1 += sizeof(char);
-		t2 += sizeof(char);
-	}while( (*(t2 - sizeof(char)) != '\0') && (*(t1 -  sizeof(char)) != '\0') );
-
-	if(*(t2 - sizeof(char)) == '\0'){
-		while(*(t1 -  sizeof(char)) != '\0'){
-		*tA =  *t1;
-		*t1 = *t2;
-		*t2 = *tA;
-
-		t1 += sizeof(char);
-		t2 += sizeof(char);
-		}
-	}
-
-	else if(*(t1 - sizeof(char)) == '\0'){
-		while(*(t2 -  sizeof(char)) != '\0'){
-		*tA =  *t1;
-		*t1 = *t2;
-		*t2 = *tA;
-
-		t1 += sizeof(char);
-		t2 += sizeof(char);
-		}
-	}
-	//termina de trocar os telefone
-
-
-	//eu sei que essa funcao ficou uma bagunça, calma que vou arrumar
 }
