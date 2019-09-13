@@ -60,7 +60,7 @@ int main(){
 				break;
 			case 3:
 			case 4:
-				pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)));		//aumenta mais um tam nome
+				pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)));		//aumenta mais um
 				opcao = (int *)pBuffer;
 				procurar(pBuffer);
 				break;
@@ -216,14 +216,9 @@ void procurar(void *pBuffer){
 		cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));
 
 		for(; *i < *qtd; *i += 1){
-			printf("%d ", *i);
-			trocarRegistros(cNome, c2, cNomeDigitado);
-
-			cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));
+			cNome = (char *)(pBuffer + 4 * sizeof(int) + (*i) * (45*sizeof(char) + sizeof(unsigned short int)));
 			c2 = (char *)(cNome + 45*sizeof(char) + sizeof(unsigned short int));
-
-			cNome = (c2 + (45*sizeof(char) + sizeof(unsigned short int)));
-			c2 = (cNome + (45*sizeof(char) + sizeof(unsigned short int)));
+			trocarRegistros(cNome, c2, cNomeDigitado);
 		}
 
 		*tam -= (45*sizeof(char) + sizeof(unsigned short int));
