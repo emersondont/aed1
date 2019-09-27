@@ -1,4 +1,4 @@
-﻿/*
+/*
 AGENDA SOMENTE COM PONTEIROS / DISCIPLINA DE ALGORITMOS E ESTRUTURA DE DADOS
 
 Registro:
@@ -25,13 +25,18 @@ void *pBuffer:
 
 void menu(int *opcao);
 void lerString(char *c);
-void imprimirString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
 void insertionSort(void *pBuffer);
 void trocarRegistros(char *c1, char *c2, char *cA);
 void trocarStringsDeRegistros(char *c1, char *c2, char *cA);
+
+typedef struct pessoa{
+	char nome[30];
+	unsigned short int idade;
+	char telefone[15];
+}TAD;
 
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
@@ -51,7 +56,7 @@ int main(){
 		menu(opcao);
 		switch(*opcao){
 			case 1:
-				*tam += (45*sizeof(char) + sizeof(unsigned short int));	//aumenta tamanho p/ mais um registro
+				*tam += sizeof(TAD);	//aumenta tamanho p/ mais um registro
 				pBuffer = realloc(pBuffer, *tam);
 				inserir(pBuffer);
 				break;
@@ -60,15 +65,20 @@ int main(){
 				break;
 			case 3:
 			case 4:
-				pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)));		//aumenta mais um
+				pBuffer = realloc(pBuffer, *tam + sizeof(TAD));		//aumenta mais um
 				opcao = (int *)pBuffer;
 				procurar(pBuffer);
 				break;
 			case 5:
+				//pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)) + sizeof(int));	//mais um registrso e mais um int
+				//opcao = (int *)pBuffer;
+				//insertionSort(pBuffer);
+				break;
+			case 6:
 				printf("saindo...\n");
 				break;
 		}
-	}while(*opcao != 5);
+	}while(*opcao != 6);
 
 	free(pBuffer);
 
@@ -84,10 +94,11 @@ void menu(int *opcao){
 		printf("\t2 - print\n");
 		printf("\t3 - search for\n");
 		printf("\t4 - delete\n");
-		printf("\t5 - exit\n");
+		printf("\t5 - insertion sort\n");
+		printf("\t6 - exit\n");
 		printf("opcao: ");
 		scanf("%d", opcao);
-	}while((*opcao <= 0) || (*opcao > 5));
+	}while((*opcao <= 0) || (*opcao > 6));
 }
 
 void lerString(char *c){
@@ -97,68 +108,54 @@ void lerString(char *c){
 	*c = '\0';
 }
 
-void imprimirString(char *c){
-	do{
-		putchar(*c);
-		c += sizeof(char);
-	}while(*c != '\0');
-	putchar('\n');
-}
-
 void inserir(void *pBuffer){
-	char *cNome, *cTelefone;
-	unsigned short int *idade;
 	int *qtd;
-	
-	//posiciona os ponteiros
+	TAD *novaPessoa;
+
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	cNome = (char *)(pBuffer + 4 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int)));	//1º caracter do nome
-	idade = (unsigned short int *)(cNome + 30 * sizeof(char));
-	cTelefone = (char *)(idade + sizeof(unsigned short int));
+	novaPessoa = (TAD *)(pBuffer + 4 * sizeof(int) + *qtd * sizeof(TAD));
 
 	*qtd += 1;
 	
 	//lê os dados
 	getchar();
 	printf("Nome: ");
-	lerString(cNome);
+	lerString(&novaPessoa->nome[0]);
 	printf("Idade: ");
-	scanf("%hu", idade);
+	scanf("%hu", &novaPessoa->idade);
 	getchar();
 	printf("Telefone: ");
-	lerString(cTelefone);
+	lerString(&novaPessoa->telefone[0]);
 }
 
 void imprimir(void *pBuffer){
-	char *cNome, *cTelefone;
-	unsigned short int *idade;
 	int *qtd, *i;
+	TAD *novaPessoa;
 	
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	i = (int *)(pBuffer + (3 * sizeof(int)));
 	
 	for(*i = 0; *i < *qtd; *i += 1){
-		//posiciona os ponteiros
-		cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//1º caracter do nome
-		idade = (unsigned short int *)(cNome + 30 * sizeof(char));
-		cTelefone = (char *)(idade + sizeof(unsigned short int));
+		novaPessoa = (TAD *)(pBuffer + 4 * sizeof(int) + *i * sizeof(TAD));		
 		
 		//imprime os dados
 		printf("Registro %d\n", *i);
 		printf("\tNome....: ");
-		imprimirString(cNome);
-		printf("\tidade...: %hu\n", *idade);
+		printf("%s\n", novaPessoa->nome);
+		printf("\tidade...: %hu\n", novaPessoa->idade);
 		printf("\tTelefone: ");
-		imprimirString(cTelefone);
+		printf("%s\n", novaPessoa->telefone);
 		printf("----------------------------------\n");
 	}
 }
 
 void procurar(void *pBuffer){
 	int *opcao, *qtd, *tam, *i;
-	char *cNome,  *cTelefone;
-	char *cNomeDigitado;	//char aux para ler o nome do registro a ser excluido ou impresso
-	unsigned short int *idade;
+	//char *cNome,  *cTelefone;
+	//char *cNomeDigitado;	//char aux para ler o nome do registro a ser excluido ou impresso
+	//unsigned short int *idade;
+
+	TAD *aux;
 
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
@@ -166,16 +163,18 @@ void procurar(void *pBuffer){
 
 	if(*qtd == 0){
 		printf("A agenda esta vazia");
+		pBuffer = realloc(pBuffer, *tam);
 		return;
 	}
 
-	cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int))); //aponta pro inicio do campo vazio que recem foi realocado
+	aux = (TAD *)(pBuffer + 4 * sizeof(int) + *qtd * sizeof(TAD));
+	//cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int))); //aponta pro inicio do campo vazio que recem foi realocado
 	
 	getchar();
 	printf("Nome: ");
 	lerString(cNomeDigitado);
 
-	cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int))); //aponta pro inicio dnv
+	//cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int))); //aponta pro inicio dnv
 
 	for(*i = 0; *i < *qtd; *i += 1){
 		cNome = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));
@@ -286,8 +285,7 @@ void trocarStringsDeRegistros(char *c1, char *c2, char *cA){
 }
 
 void insertionSort(void *pBuffer){
-	//primeiro por idade
-	/*
+	/*//primeirompor idade
 	int *qtd, *i, *j, *tam;
 	unsigned short int *iTemp, *iDataI, *iDataJ, *iDataIMaisUm;	//idade 
 	char *cTemp, *cDataI, *cDataJ, *cDataIMaisUm, *cAux;				//nome
@@ -318,6 +316,6 @@ void insertionSort(void *pBuffer){
 
 	}
 
-	*/
-	//pBuffer = realloc(pBuffer, *tam);
+
+	pBuffer = realloc(pBuffer, *tam);*/
 }
