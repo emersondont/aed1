@@ -69,16 +69,16 @@ int main(){
 				opcao = (int *)pBuffer;
 				procurar(pBuffer);
 				break;
-			case 5:
+			//case 5:
 				//pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)) + sizeof(int));	//mais um registrso e mais um int
 				//opcao = (int *)pBuffer;
 				//insertionSort(pBuffer);
-				break;
-			case 6:
+			//	break;
+			case 5:
 				printf("saindo...\n");
 				break;
 		}
-	}while(*opcao != 6);
+	}while(*opcao != 5);
 
 	free(pBuffer);
 
@@ -94,11 +94,11 @@ void menu(int *opcao){
 		printf("\t2 - print\n");
 		printf("\t3 - search for\n");
 		printf("\t4 - delete\n");
-		printf("\t5 - insertion sort\n");
-		printf("\t6 - exit\n");
+		//printf("\t5 - insertion sort\n");
+		printf("\t5 - exit\n");
 		printf("opcao: ");
 		scanf("%d", opcao);
-	}while((*opcao <= 0) || (*opcao > 6));
+	}while((*opcao <= 0) || (*opcao > 5));
 }
 
 void lerString(char *c){
@@ -168,11 +168,10 @@ void procurar(void *pBuffer){
 	}
 
 	aux = (TAD *)(pBuffer + 4 * sizeof(int) + *qtd * sizeof(TAD));
-	//cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int))); //aponta pro inicio do campo vazio que recem foi realocado
-	
+		
 	getchar();
 	printf("Nome: ");
-	lerString(cNomeDigitado);
+	lerString(aux->nome);
 
 	//cNomeDigitado = (char *)(pBuffer + 3 * sizeof(int) + *qtd * (45*sizeof(char) + sizeof(unsigned short int))); //aponta pro inicio dnv
 
