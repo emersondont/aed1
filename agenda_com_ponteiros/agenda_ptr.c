@@ -29,6 +29,7 @@ void imprimirString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
+void insertionSort(void *pBuffer);
 void trocarRegistros(char *c1, char *c2, char *cA);
 void trocarStringsDeRegistros(char *c1, char *c2, char *cA);
 
@@ -56,7 +57,6 @@ int main(){
 				break;
 			case 2:
 				imprimir(pBuffer);
-				//printf("%d", *tam);
 				break;
 			case 3:
 			case 4:
@@ -65,10 +65,14 @@ int main(){
 				procurar(pBuffer);
 				break;
 			case 5:
+				pBuffer = realloc(pBuffer, *tam + (45*sizeof(char) + sizeof(unsigned short int)) + sizeof(int));	//mais um registrso e mais um int
+				insertionSort(pBuffer);
+				break;
+			case 6:
 				printf("saindo...\n");
 				break;
 		}
-	}while(*opcao != 5);
+	}while(*opcao != 6);
 
 	free(pBuffer);
 
@@ -84,10 +88,11 @@ void menu(int *opcao){
 		printf("\t2 - print\n");
 		printf("\t3 - search for\n");
 		printf("\t4 - delete\n");
-		printf("\t5 - exit\n");
+		printf("\t5 - insertion sort\n");
+		printf("\t6 - exit\n");
 		printf("opcao: ");
 		scanf("%d", opcao);
-	}while((*opcao <= 0) || (*opcao > 5));
+	}while((*opcao <= 0) || (*opcao > 6));
 }
 
 void lerString(char *c){
@@ -250,41 +255,6 @@ void trocarRegistros(char *c1, char *c2, char *cA){
 
 	//trocar os telefone dos geristros
 	trocarStringsDeRegistros(t1, t2, tA);
-	
- 	/*
-	do{
-		*tA =  *t1;
-		*t1 = *t2;
-		*t2 = *tA;
-
-		t1 += sizeof(char);
-		t2 += sizeof(char);
-	}while( (*(t2 - sizeof(char)) != '\0') && (*(t1 -  sizeof(char)) != '\0') );
-
-	if(*(t2 - sizeof(char)) == '\0'){
-		while(*(t1 -  sizeof(char)) != '\0'){
-		*tA =  *t1;
-		*t1 = *t2;
-		*t2 = *tA;
-
-		t1 += sizeof(char);
-		t2 += sizeof(char);
-		}
-	}
-
-	else if(*(t1 - sizeof(char)) == '\0'){
-		while(*(t2 -  sizeof(char)) != '\0'){
-		*tA =  *t1;
-		*t1 = *t2;
-		*t2 = *tA;
-
-		t1 += sizeof(char);
-		t2 += sizeof(char);
-		}
-	}*/
-
-
-	//eu sei que essa funcao ficou uma bagunça, calma que vou arrumar
 }
 
 void trocarStringsDeRegistros(char *c1, char *c2, char *cA){
@@ -318,4 +288,40 @@ void trocarStringsDeRegistros(char *c1, char *c2, char *cA){
 		c2 += sizeof(char);
 		}
 	}
+}
+
+void insertionSort(void *pBuffer){
+	//primeirompor idade
+	int *qtd, *i, *j, *tam;
+	unsigned short int *temp, *dataI, *dataJ, *dataIMaisUm;  
+	//char *cTemp, *cDataI, *cDataJ;
+
+
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+	i = (int *)(pBuffer + (3 * sizeof(int)));
+	j = (int *)(pBuffer + 3 * sizeof(int) + (*qtd + 1) * (45*sizeof(char) + sizeof(unsigned short int)));
+	
+
+	for(*j = 1; *j < *qtd; *j += 1){
+		//cDataJ = (char *)(pBuffer + 4 * sizeof(int) + *j * (45*sizeof(char) + sizeof(unsigned short int)));	//data[j]
+		//cDataI = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//data[j]
+		//cTemp = (char *)cDataJ;
+		*i = *j - 1;
+		dataJ = (unsigned short int *)(pBuffer + 4 * sizeof(int) + *j * (45*sizeof(char) + sizeof(unsigned short int)) + 30*sizeof(char));
+		dataI = (unsigned short int *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)) + 30*sizeof(char));
+
+		temp = (unsigned short int *)dataJ;
+		while((*i >= 0) && (*temp < *dataI)){
+			dataIMaisUm = (unsigned short int *)(pBuffer + 4 * sizeof(int) + (*i + 1) * (45*sizeof(char) + sizeof(unsigned short int)) + 30*sizeof(char));
+			dataIMaisUm = dataI;
+
+
+			//printf("%d %d", *dataJ, *dataI);
+		}
+
+	}
+
+
+	pBuffer = realloc(pBuffer, *tam);
 }
