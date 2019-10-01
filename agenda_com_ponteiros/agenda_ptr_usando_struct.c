@@ -46,16 +46,11 @@ int main(){
 	
 	*qtd = 0;
 	*tam = (3 * sizeof(int));
-	pBuffer = realloc(pBuffer, *tam + sizeof(int));
-	leArq(pBuffer);
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	//tam = (int *)(pBuffer + (2 * sizeof(int)));
 
 	do{
 		opcao = (int *)pBuffer;
 		tam = (int *)(pBuffer + (2 * sizeof(int)));
 		qtd = (int *)(pBuffer + (1 * sizeof(int)));
-		printf("chegou %d %d\n", *tam, *qtd);
 
 		menu(opcao);
 		switch(*opcao){
@@ -65,18 +60,16 @@ int main(){
 				inserir(pBuffer);
 				break;
 			case 2:
-				printf("QTD: %d\n", *qtd);
-				//pBuffer = realloc(pBuffer, *tam + sizeof(int));	//int p controle do for
-				//imprimir(pBuffer);
+				pBuffer = realloc(pBuffer, *tam + sizeof(int));	//int p controle do for
+				imprimir(pBuffer);
 				break;
 			case 3:
 			case 4:
 				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + sizeof(int));		//aumenta mais um
-				opcao = (int *)pBuffer;
 				procurar(pBuffer);
 				break;
 			case 5:
-				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 2*sizeof(int));
+				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 4*sizeof(int));
 				insertionSort(pBuffer);
 				break;
 			case 6:
@@ -233,6 +226,7 @@ void insertionSort(void *pBuffer){
 		
 		*dataIMaisUm = *temp;
 	}
+	imprimir(pBuffer);
 	pBuffer = realloc(pBuffer,*tam);
 }
 
@@ -279,14 +273,18 @@ void leArq(void *pBuffer){
 	for(*i = 0; *i < *qtd; *i += 1){
 		pessoa = (TAD *)(pBuffer + 3 * sizeof(int) + *i * sizeof(TAD));		
 		
-		fscanf(entrada,"%[^\n]s", &pessoa->nome);
+		fscanf(entrada,"%[^\n]s", pessoa->nome);
 		fscanf(entrada,"%c", &lixo);
 		fscanf(entrada,"%hu", &pessoa->idade);
 		fscanf(entrada,"%c", &lixo);
-		fscanf(entrada,"%[^\n]s", &pessoa->telefone);
+		fscanf(entrada,"%[^\n]s", pessoa->telefone);
 		fscanf(entrada,"%c", &lixo);
+
+		printf("\tNome....: %s\n", pessoa->nome);
+		printf("\tidade...: %hu\n", pessoa->idade);
+		printf("\tTelefone: %s\n", pessoa->telefone);
 	}
-	//imprimir(pBuffer);
+	imprimir(pBuffer);
 	printf("TAM: %d QTD: %d\n", *tam, *qtd);
 	pBuffer = realloc(pBuffer, *tam);
 	fclose(entrada);
