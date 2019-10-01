@@ -29,7 +29,6 @@ void imprimirString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
-void insertionSort(void *pBuffer);
 void trocarRegistros(char *c1, char *c2, char *cA);
 void trocarStringsDeRegistros(char *c1, char *c2, char *cA);
 
@@ -283,41 +282,4 @@ void trocarStringsDeRegistros(char *c1, char *c2, char *cA){
 		c2 += sizeof(char);
 		}
 	}
-}
-
-void insertionSort(void *pBuffer){
-	//primeiro por idade
-	/*
-	int *qtd, *i, *j, *tam;
-	unsigned short int *iTemp, *iDataI, *iDataJ, *iDataIMaisUm;	//idade 
-	char *cTemp, *cDataI, *cDataJ, *cDataIMaisUm, *cAux;				//nome
-
-
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	i = (int *)(pBuffer + (3 * sizeof(int)));
-	j = (int *)(pBuffer + 3 * sizeof(int) + (*qtd + 1) * (45*sizeof(char) + sizeof(unsigned short int)));
-	
-
-	for(*j = 1; *j < *qtd; *j += 1){
-		cDataJ = (char *)(pBuffer + 4 * sizeof(int) + *j * (45*sizeof(char) + sizeof(unsigned short int)));	//data[j]
-		*i = *j - 1;
-		cDataI = (char *)(pBuffer + 4 * sizeof(int) + *i * (45*sizeof(char) + sizeof(unsigned short int)));	//data[j]
-		iDataI = (unsigned short int *)(cDataJ + 30 * sizeof(char));
-		iDataJ = (unsigned short int *)(cDataI + 30 * sizeof(char));
-
-		cTemp = (char *)cDataJ;
-		temp = (unsigned short int *)iDataJ;
-
-		while((*i >= 0) && (*temp < *iDataI)){
-			cDataIMaisUm = (char *)(pBuffer + 4 * sizeof(int) + (*i + 1) * (45*sizeof(char) + sizeof(unsigned short int)));
-			trocarRegistros(cDataIMaisUm, cDataI, ); //cDataIMaisUm = cDataI;
-
-			*i -= 1;
-		}
-
-	}
-
-	*/
-	//pBuffer = realloc(pBuffer, *tam);
 }
