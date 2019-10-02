@@ -26,9 +26,10 @@ void lerString(char *c);
 void inserir(void *pBuffer);
 void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
-void insertionSort(void *pBuffer);
 void salvaArq(void *pBuffer);
 void leArq(void *pBuffer, FILE *entrada);
+void ordenacao(void *pBuffer);
+void insertionSort(void *pBuffer);
 
 typedef struct pessoa{
 	char nome[30];
@@ -58,15 +59,18 @@ int main(){
 				pBuffer = realloc(pBuffer, *tam);
 				inserir(pBuffer);
 				break;
+
 			case 2:
 				pBuffer = realloc(pBuffer, *tam + sizeof(int));	//int p controle do for
 				imprimir(pBuffer);
 				break;
+
 			case 3:
 			case 4:
 				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + sizeof(int));		//aumenta mais 1 TAD e 1 int p for
 				procurar(pBuffer);
 				break;
+
 			case 5:
 				entrada = fopen("dados.txt", "r");
 				fscanf(entrada,"%d", qtd);
@@ -76,17 +80,26 @@ int main(){
 				leArq(pBuffer, entrada);
 				fclose(entrada);
 				break;
+
 			case 6:
 				pBuffer = realloc(pBuffer, *tam + sizeof(int));
 				salvaArq(pBuffer);
 				break;
+
+			case 7:
+				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 2*sizeof(int));
+				insertionSort(pBuffer);
+				break;
+
 			case 0:
 				printf("saindo...\n");
 				break;
+
 			default:
 				printf("opcao invalida\n");
 				break;
 		}
+
 		opcao = (int *)pBuffer;
 		tam = (int *)(pBuffer + (2 * sizeof(int)));
 	}while(*opcao != 0);
@@ -107,10 +120,11 @@ void menu(int *opcao){
 		printf("\t4 - delete\n");
 		printf("\t5 - read data from file\n");
 		printf("\t6 - write data to file\n");
+		printf("\t7 - insertionSort\n");
 		printf("\t0 - exit\n");
 		printf("option: ");
 		scanf("%d", opcao);
-	}while((*opcao < 0) || (*opcao > 6));
+	}while((*opcao < 0) || (*opcao > 7));
 }
 
 void lerString(char *c){
@@ -258,4 +272,37 @@ void leArq(void *pBuffer, FILE *entrada){
 		fscanf(entrada,"%[^\n]s", pessoa->telefone);
 	}
 	pBuffer = realloc(pBuffer, *tam);
+}
+
+void insertionSort(void *pBuffer){
+	int *qtd, *tam, *i, *j;
+	TAD *tmp, *vI, *vIProx, *vJ;
+
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+	
+	tmp = (TAD *)(pBuffer + *tam);
+	i = (int *)(tmp + sizeof(TAD));
+	j = (int *)(i + sizeof(int));
+
+	for(*j = 1; *j < *qtd; *j += 1){
+		*i = *j - 1;
+
+		vJ = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));				//v[j]
+		vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));				//v[i]
+		vIProx = (TAD *)(pBuffer + 3*sizeof(int) + (*i+1) * sizeof(TAD));		//v[i+1]
+		*tmp = *vJ;		//tmp = v[j]
+
+		while( (*i >= 0) && (strcmp(vI->nome, tmp->nome) == 1) ){				//vI > tmp
+			*vIProx = *vI;
+			(*i)--;
+
+			vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));			//v[i]	
+			vIProx = (TAD *)(pBuffer + 3*sizeof(int) + (*i+1) * sizeof(TAD));	//v[i+1]
+		}
+
+		*vIProx = *tmp;		//v[i+1] = tmp
+	}
+
+	pBuffer = realloc(pBuffer, *tam);	//volta pro tamanho
 }
