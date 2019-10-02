@@ -30,6 +30,7 @@ void salvaArq(void *pBuffer);
 void leArq(void *pBuffer, FILE *entrada);
 void ordenacao(void *pBuffer);
 void insertionSort(void *pBuffer);
+void selectSort(void *pBuffer);
 
 typedef struct pessoa{
 	char nome[30];
@@ -91,6 +92,11 @@ int main(){
 				insertionSort(pBuffer);
 				break;
 
+			case 8:
+				pBuffer = realloc(pBuffer, *tam + 2*sizeof(TAD) + 3*sizeof(int));
+				selectSort(pBuffer);
+				break;
+
 			case 0:
 				printf("saindo...\n");
 				break;
@@ -121,10 +127,11 @@ void menu(int *opcao){
 		printf("\t5 - read data from file\n");
 		printf("\t6 - write data to file\n");
 		printf("\t7 - insertionSort\n");
+		printf("\t8 - selectSort\n");
 		printf("\t0 - exit\n");
 		printf("option: ");
 		scanf("%d", opcao);
-	}while((*opcao < 0) || (*opcao > 7));
+	}while((*opcao < 0) || (*opcao > 8));
 }
 
 void lerString(char *c){
@@ -280,7 +287,7 @@ void insertionSort(void *pBuffer){
 
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	
+
 	tmp = (TAD *)(pBuffer + *tam);
 	i = (int *)(tmp + sizeof(TAD));
 	j = (int *)(i + sizeof(int));
@@ -305,4 +312,41 @@ void insertionSort(void *pBuffer){
 	}
 
 	pBuffer = realloc(pBuffer, *tam);	//volta pro tamanho
+}
+
+void selectSort(void *pBuffer){
+	int *qtd, *tam, *i, *j, *min_id;
+	TAD *min, *tmp, *vJ, *vI, *vMin_id;
+
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+
+	tmp = (TAD *)(pBuffer + *tam);
+	min = (TAD *)(tmp + sizeof(TAD));
+	i = (int *)(min + sizeof(TAD));
+	j = (int *)(i + sizeof(int));
+	min_id = (int *)(j + sizeof(int));
+
+	for(*i = 0; *i < (*qtd -1); *i += 1){
+		vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));	//v[i]
+		*min = *vI;			//min = v[i]
+		*min_id = (*i - 1);
+
+		for(*j = (*i +1); *j < *qtd; *j +=1){
+			vI = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));	//v[j]
+
+			if(strcmp(min->nome, vJ->nome) == 1){	//min > v[j]
+				*min = *vJ;
+				*min_id = *j;
+			}
+
+			vMin_id = (TAD *)(pBuffer + 3*sizeof(int) + *min_id * sizeof(TAD));	//v[min_id]
+
+			*tmp = *vI;
+			*vI = *vMin_id;
+			*vMin_id = *tmp;
+		}
+	}
+
+	//pBuffer = realloc(pBuffer, *tam);	//volta pro tamanho
 }
