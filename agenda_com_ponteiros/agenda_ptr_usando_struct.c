@@ -28,7 +28,7 @@ void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
 void insertionSort(void *pBuffer);
 void salvaArq(void *pBuffer);
-void leArq(void *pBuffer);
+void leArq(void *pBuffer, FILE *entrada);
 
 typedef struct pessoa{
 	char nome[30];
@@ -39,8 +39,10 @@ typedef struct pessoa{
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
 	int *opcao, *qtd, *tam;
+	FILE *entrada;
 	
 	pBuffer = (void *)malloc(3 * sizeof(int));		//aloca os 3 inteiros iniciais
+	opcao = (int *)pBuffer;
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));		//numero de elementos
 	tam = (int *)(pBuffer + (2 * sizeof(int))); 	//tamanho do pBuffer
 	
@@ -48,11 +50,8 @@ int main(){
 	*tam = (3 * sizeof(int));
 
 	do{
-		opcao = (int *)pBuffer;
-		tam = (int *)(pBuffer + (2 * sizeof(int)));
-		qtd = (int *)(pBuffer + (1 * sizeof(int)));
-
 		menu(opcao);
+
 		switch(*opcao){
 			case 1:
 				*tam += sizeof(TAD);	//aumenta tamanho p/ mais um registro
@@ -65,21 +64,32 @@ int main(){
 				break;
 			case 3:
 			case 4:
-				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + sizeof(int));		//aumenta mais um
+				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + sizeof(int));		//aumenta mais 1 TAD e 1 int p for
 				procurar(pBuffer);
 				break;
 			case 5:
-				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 4*sizeof(int));
-				insertionSort(pBuffer);
+				entrada = fopen("dados.txt", "r");
+				fscanf(entrada,"%d", qtd);
+				*tam += (*qtd * sizeof(TAD));
+				pBuffer = realloc(pBuffer, *tam + sizeof(int) + sizeof(char));
+			
+				leArq(pBuffer, entrada);
+				fclose(entrada);
 				break;
 			case 6:
-				//pBuffer = realloc(pBuffer, *tam + sizeof(int));
-				//salvaArq(pBuffer);
+				pBuffer = realloc(pBuffer, *tam + sizeof(int));
+				salvaArq(pBuffer);
+				break;
+			case 0:
 				printf("saindo...\n");
+				break;
+			default:
+				printf("opcao invalida\n");
 				break;
 		}
 		opcao = (int *)pBuffer;
-	}while(*opcao != 6);
+		tam = (int *)(pBuffer + (2 * sizeof(int)));
+	}while(*opcao != 0);
 
 	free(pBuffer);
 
@@ -95,11 +105,12 @@ void menu(int *opcao){
 		printf("\t2 - print\n");
 		printf("\t3 - search for\n");
 		printf("\t4 - delete\n");
-		printf("\t5 - insertion sort\n");
-		printf("\t6 - exit\n");
-		printf("opcao: ");
+		printf("\t5 - read data from file\n");
+		printf("\t6 - write data to file\n");
+		printf("\t0 - exit\n");
+		printf("option: ");
 		scanf("%d", opcao);
-	}while((*opcao <= 0) || (*opcao > 6));
+	}while((*opcao < 0) || (*opcao > 6));
 }
 
 void lerString(char *c){
@@ -197,37 +208,10 @@ void procurar(void *pBuffer){
 
 		*tam -= sizeof(TAD);
 		*qtd -= 1;
+		printf("Registro apagado\n");
 	}
 
 	pBuffer = realloc(pBuffer, *tam);
-}
-
-
-void insertionSort(void *pBuffer){
-	int *i, *j, *qtd, *tam;
-	TAD *temp, *dataI, *dataIMaisUm;
-	
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	i = (int *)(pBuffer + *tam + sizeof(TAD));
-	j = (int *)(i + sizeof(int));
-	
-	for(*j = 1; *j < *qtd; *j += 1){
-		*i = *j - 1;
-		temp = (TAD *)(pBuffer + 3 * sizeof(int) + *j * sizeof(TAD));	//temp = data[j]
-		dataI = (TAD *)(pBuffer + 3 * sizeof(int) + *i * sizeof(TAD));
-		
-		while((*i >= 0) && (strcmp(temp->nome, dataI->nome) == -1)){
-			dataIMaisUm = (TAD *)(pBuffer + 3 * sizeof(int) + (*i + 1) * sizeof(TAD));
-			
-			*dataIMaisUm = *dataI;
-			*i -= 1;
-		}
-		
-		*dataIMaisUm = *temp;
-	}
-	imprimir(pBuffer);
-	pBuffer = realloc(pBuffer,*tam);
 }
 
 void salvaArq(void *pBuffer){
@@ -235,7 +219,7 @@ void salvaArq(void *pBuffer){
 	FILE *saida;
 	TAD *pessoa;
 	
-	saida = fopen("dados.txt", "w");
+	saida = fopen("dados-1.txt", "w");
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
 	i = (int *)(pBuffer + *tam);
@@ -252,40 +236,26 @@ void salvaArq(void *pBuffer){
 	fclose(saida);
 	pBuffer = realloc(pBuffer, *tam);
 }
-void leArq(void *pBuffer){
-	char lixo;
+
+void leArq(void *pBuffer, FILE *entrada){
+	char *lixo;
 	int *qtd, *tam, *i;
-	FILE *entrada;
 	TAD *pessoa;
-	entrada = fopen("dados.txt", "r");
-	
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	
-	fscanf(entrada,"%d", qtd);
-	*tam += (*qtd * sizeof(TAD));
-	
+
 	qtd = (int *)(pBuffer + (1 * sizeof(int)));
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
 	i = (int *)(pBuffer + *tam);
-	
-	fscanf(entrada,"%c", &lixo);
-	for(*i = 0; *i < *qtd; *i += 1){
-		pessoa = (TAD *)(pBuffer + 3 * sizeof(int) + *i * sizeof(TAD));		
-		
-		fscanf(entrada,"%[^\n]s", pessoa->nome);
-		fscanf(entrada,"%c", &lixo);
-		fscanf(entrada,"%hu", &pessoa->idade);
-		fscanf(entrada,"%c", &lixo);
-		fscanf(entrada,"%[^\n]s", pessoa->telefone);
-		fscanf(entrada,"%c", &lixo);
+	lixo = (char *)(i + sizeof(int));
 
-		printf("\tNome....: %s\n", pessoa->nome);
-		printf("\tidade...: %hu\n", pessoa->idade);
-		printf("\tTelefone: %s\n", pessoa->telefone);
+	for(*i = 0; *i < *qtd; *i += 1){
+		pessoa = (TAD *)(pBuffer + 3 * sizeof(int) + *i * sizeof(TAD));	
+
+		fscanf(entrada,"%c", lixo);
+		fscanf(entrada,"%[^\n]s", pessoa->nome);
+		fscanf(entrada,"%c", lixo);
+		fscanf(entrada,"%hu", &pessoa->idade);
+		fscanf(entrada,"%c", lixo);
+		fscanf(entrada,"%[^\n]s", pessoa->telefone);
 	}
-	imprimir(pBuffer);
-	printf("TAM: %d QTD: %d\n", *tam, *qtd);
 	pBuffer = realloc(pBuffer, *tam);
-	fclose(entrada);
 }
