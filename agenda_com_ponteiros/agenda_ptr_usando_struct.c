@@ -70,12 +70,10 @@ int main(){
 				pBuffer = realloc(pBuffer, *tam);
 				inserir(pBuffer);
 				break;
-
 			case 2:
 				pBuffer = realloc(pBuffer, *tam + sizeof(int));	//int p controle do for
 				imprimir(pBuffer);
 				break;
-
 			case 3:
 			case 4:
 				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + sizeof(int));		//aumenta mais 1 TAD e 1 int p for
@@ -101,17 +99,17 @@ int main(){
 				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 2*sizeof(int));
 				insertionSort(pBuffer);
 				break;
-
 			case 6:
-				//printf("%d\n\n", *tam);
 				pBuffer = realloc(pBuffer, *tam + 2*sizeof(TAD) + 3*sizeof(int));
 				selectSort(pBuffer);
 				break;
-
 			case 7:
+				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 2*sizeof(int));
+				bubbleSort(pBuffer);
+				break;
+			case 8:
 				printf("saindo...\n");
 				break;
-
 			default:
 				printf("opcao invalida\n");
 				break;
@@ -119,7 +117,7 @@ int main(){
 
 		opcao = (int *)pBuffer;
 		tam = (int *)(pBuffer + (2 * sizeof(int)));
-	}while(*opcao != 7);
+	}while(*opcao != 8);
 
 	free(pBuffer);
 
@@ -141,10 +139,11 @@ void menu(int *opcao){
 		*/
 		printf("\t5 - insertionSort\n");
 		printf("\t6 - selectSort\n");
-		printf("\t7 - exit\n");
+		printf("\t7 - bubbleSort\n");
+		printf("\t8 - exit\n");
 		printf("option: ");
 		scanf("%d", opcao);
-	}while((*opcao < 0) || (*opcao > 7));
+	}while((*opcao < 0) || (*opcao > 8));
 }
 
 void lerString(char *c){
@@ -362,4 +361,30 @@ void selectSort(void *pBuffer){
 	}
 
 	pBuffer = realloc(pBuffer, *tam);	//volta pro tamanho
+}
+
+void bubbleSort(void *pBuffer){
+	int *qtd, *tam, *i, *j;
+	TAD *vI, *vJ, *aux;
+
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+
+	aux = (TAD *)(pBuffer + *tam);
+	i = (int *)(aux + sizeof(TAD));
+	j = (int *)(i + sizeof(int));
+
+	for(*i = 0; *i < (*qtd - 1); *i += 1){
+		vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));
+		for(*j = *i + 1; *j < *qtd; *j += 1){
+			vJ = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));
+
+			if(strcmp(vI->nome, vJ->nome) == 1){	//v[i] > v[j]
+				*aux = *vI;
+				*vI = *vJ;
+				*vJ = *aux;
+			}
+		}
+	}
+	pBuffer = realloc(pBuffer, *tam);
 }
