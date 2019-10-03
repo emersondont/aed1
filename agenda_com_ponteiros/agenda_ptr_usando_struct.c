@@ -28,9 +28,10 @@ void imprimir(void *pBuffer);
 void procurar(void *pBuffer);
 void salvaArq(void *pBuffer);
 void leArq(void *pBuffer, FILE *entrada);
-void ordenacao(void *pBuffer);
+
 void insertionSort(void *pBuffer);
 void selectSort(void *pBuffer);
+void bubbleSort(void *pBuffer);
 
 typedef struct pessoa{
 	char nome[30];
@@ -50,6 +51,15 @@ int main(){
 	
 	*qtd = 0;
 	*tam = (3 * sizeof(int));
+	//ler arq
+		entrada = fopen("dados.txt", "r");
+		fscanf(entrada,"%d", qtd);
+		*tam += (*qtd * sizeof(TAD));
+		pBuffer = realloc(pBuffer, *tam + sizeof(int) + sizeof(char));
+			
+		leArq(pBuffer, entrada);
+		fclose(entrada);
+	//
 
 	do{
 		menu(opcao);
@@ -71,7 +81,7 @@ int main(){
 				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + sizeof(int));		//aumenta mais 1 TAD e 1 int p for
 				procurar(pBuffer);
 				break;
-
+		/*
 			case 5:
 				entrada = fopen("dados.txt", "r");
 				fscanf(entrada,"%d", qtd);
@@ -86,18 +96,19 @@ int main(){
 				pBuffer = realloc(pBuffer, *tam + sizeof(int));
 				salvaArq(pBuffer);
 				break;
-
-			case 7:
+		*/
+			case 5:
 				pBuffer = realloc(pBuffer, *tam + sizeof(TAD) + 2*sizeof(int));
 				insertionSort(pBuffer);
 				break;
 
-			case 8:
+			case 6:
+				//printf("%d\n\n", *tam);
 				pBuffer = realloc(pBuffer, *tam + 2*sizeof(TAD) + 3*sizeof(int));
 				selectSort(pBuffer);
 				break;
 
-			case 0:
+			case 7:
 				printf("saindo...\n");
 				break;
 
@@ -108,7 +119,7 @@ int main(){
 
 		opcao = (int *)pBuffer;
 		tam = (int *)(pBuffer + (2 * sizeof(int)));
-	}while(*opcao != 0);
+	}while(*opcao != 7);
 
 	free(pBuffer);
 
@@ -124,14 +135,16 @@ void menu(int *opcao){
 		printf("\t2 - print\n");
 		printf("\t3 - search for\n");
 		printf("\t4 - delete\n");
+		/*
 		printf("\t5 - read data from file\n");
 		printf("\t6 - write data to file\n");
-		printf("\t7 - insertionSort\n");
-		printf("\t8 - selectSort\n");
-		printf("\t0 - exit\n");
+		*/
+		printf("\t5 - insertionSort\n");
+		printf("\t6 - selectSort\n");
+		printf("\t7 - exit\n");
 		printf("option: ");
 		scanf("%d", opcao);
-	}while((*opcao < 0) || (*opcao > 8));
+	}while((*opcao < 0) || (*opcao > 7));
 }
 
 void lerString(char *c){
@@ -322,7 +335,7 @@ void selectSort(void *pBuffer){
 	tam = (int *)(pBuffer + (2 * sizeof(int)));
 
 	tmp = (TAD *)(pBuffer + *tam);
-	min = (TAD *)(tmp + sizeof(TAD));
+	min = (TAD *)(tmp + sizeof(TAD));	
 	i = (int *)(min + sizeof(TAD));
 	j = (int *)(i + sizeof(int));
 	min_id = (int *)(j + sizeof(int));
@@ -330,23 +343,23 @@ void selectSort(void *pBuffer){
 	for(*i = 0; *i < (*qtd -1); *i += 1){
 		vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));	//v[i]
 		*min = *vI;			//min = v[i]
-		*min_id = (*i - 1);
-
-		for(*j = (*i +1); *j < *qtd; *j +=1){
-			vI = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));	//v[j]
+		*min_id = *i;
+		
+		for(*j = (*i + 1); *j < *qtd; *j += 1){
+			vJ = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));	//v[j]
 
 			if(strcmp(min->nome, vJ->nome) == 1){	//min > v[j]
 				*min = *vJ;
 				*min_id = *j;
 			}
-
-			vMin_id = (TAD *)(pBuffer + 3*sizeof(int) + *min_id * sizeof(TAD));	//v[min_id]
-
-			*tmp = *vI;
-			*vI = *vMin_id;
-			*vMin_id = *tmp;
 		}
+
+		vMin_id = (TAD *)(pBuffer + 3*sizeof(int) + *min_id * sizeof(TAD));	//v[min_id]
+
+		*tmp = *vI;
+		*vI = *vMin_id;
+		*vMin_id = *tmp;
 	}
 
-	//pBuffer = realloc(pBuffer, *tam);	//volta pro tamanho
+	pBuffer = realloc(pBuffer, *tam);	//volta pro tamanho
 }
