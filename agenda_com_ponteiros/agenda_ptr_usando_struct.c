@@ -375,9 +375,9 @@ void bubbleSort(void *pBuffer){
 	j = (int *)(i + sizeof(int));
 
 	for(*i = 0; *i < (*qtd - 1); *i += 1){
-		vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));
+		vI = (TAD *)(pBuffer + 3*sizeof(int) + *i * sizeof(TAD));	//v[i]
 		for(*j = *i + 1; *j < *qtd; *j += 1){
-			vJ = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));
+			vJ = (TAD *)(pBuffer + 3*sizeof(int) + *j * sizeof(TAD));	//v[j]
 
 			if(strcmp(vI->nome, vJ->nome) == 1){	//v[i] > v[j]
 				*aux = *vI;
