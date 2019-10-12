@@ -32,6 +32,7 @@ void leArq(void *pBuffer, FILE *entrada);
 void insertionSort(void *pBuffer);
 void selectSort(void *pBuffer);
 void bubbleSort(void *pBuffer);
+void quickSort(void *pBuffer, int *left, int *right);
 
 typedef struct pessoa{
 	char nome[30];
@@ -42,6 +43,7 @@ typedef struct pessoa{
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
 	int *opcao, *qtd, *tam;
+	int *controleRecursao, *left, *right;		//quickSort
 	FILE *entrada;
 	
 	pBuffer = (void *)malloc(3 * sizeof(int));		//aloca os 3 inteiros iniciais
@@ -108,6 +110,25 @@ int main(){
 				bubbleSort(pBuffer);
 				break;
 			case 8:
+				*tam += (4*sizeof(int) + 2*sizeof(TAD));
+				*tam += sizeof(int);	//controle da recursão
+				pBuffer = realloc(pBuffer, *tam + (5*sizeof(int) + 2*sizeof(TAD)));
+
+				qtd = (int *)(pBuffer + (1 * sizeof(int)));
+				tam = (int *)(pBuffer + (2 * sizeof(int)));
+
+				controleRecursao = (int *)(pBuffer + (3 * sizeof(int)) + (*qtd * sizeof(TAD)));
+				*controleRecursao = 0;
+				left = (int *)(pBuffer + *tam);
+				right = (int *)(left + sizeof(int));
+
+				//*left = 0;
+				//*right = *qtd;
+				*controleRecursao += 1;
+
+				quickSort(pBuffer, left, right);
+				break;
+			case 9:
 				printf("saindo...\n");
 				break;
 			default:
@@ -117,7 +138,7 @@ int main(){
 
 		opcao = (int *)pBuffer;
 		tam = (int *)(pBuffer + (2 * sizeof(int)));
-	}while(*opcao != 8);
+	}while(*opcao != 9);
 
 	free(pBuffer);
 
@@ -140,10 +161,11 @@ void menu(int *opcao){
 		printf("\t5 - insertionSort\n");
 		printf("\t6 - selectSort\n");
 		printf("\t7 - bubbleSort\n");
-		printf("\t8 - exit\n");
+		printf("\t8 - quickSort\n");
+		printf("\t9 - exit\n");
 		printf("option: ");
 		scanf("%d", opcao);
-	}while((*opcao < 0) || (*opcao > 8));
+	}while((*opcao <= 0) || (*opcao > 9));
 }
 
 void lerString(char *c){
@@ -388,3 +410,17 @@ void bubbleSort(void *pBuffer){
 	}
 	pBuffer = realloc(pBuffer, *tam);
 }
+
+void quickSort(void *pBuffer, int *left, int *right){
+	int *controleRecursao, *qtd, *tam;
+	int *i, *j;
+	TAD *mid, *tmp, *vI, *vJ;
+	
+	qtd = (int *)(pBuffer + (1 * sizeof(int)));
+	tam = (int *)(pBuffer + (2 * sizeof(int)));
+	controleRecursao = (int *)(pBuffer + (3 * sizeof(int)) + (*qtd * sizeof(TAD)));
+
+	printf("%d ", *controleRecursao);
+}
+
+
