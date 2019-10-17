@@ -18,6 +18,8 @@ int main(){
 	quickSort(string, 0, cont-1);
 
 	puts(string);
+
+	free(string);
 	return 0;
 }
 
