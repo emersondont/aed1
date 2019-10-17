@@ -41,7 +41,6 @@ void quickSort(char *string, int left, int right){
 			i++;
 			j--;
 		}
-
 	}while(i <= j);
 
 	if(left < j)
