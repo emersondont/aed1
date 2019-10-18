@@ -153,13 +153,13 @@ void merge(int *comeco, int *meio, int *fim){
 		auxId++;
 	}
 
-	while(i <= meio){		//caso ainda haja na elementos na primeira parte
+	while(i <= meio){		//caso ainda haja elementos na primeira parte
 		*auxId = *i;
 		auxId++;
 		i++;
 	}
 
-	while(j <= fim){		//caso ainda haja na elementos na segunda parte
+	while(j <= fim){		//caso ainda haja elementos na segunda parte
 		*auxId = *j;
 		auxId++;
 		j++;
