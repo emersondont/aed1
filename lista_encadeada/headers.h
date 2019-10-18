@@ -19,4 +19,6 @@ typedef struct lista{
 	SNodo *pFirst;
 }SLista;
 
+int soma(int n1, int n2);
+
 #endif
