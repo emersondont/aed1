@@ -1,17 +1,7 @@
-/**
-*	CASO DE TESTES
-* para 10000 numeros
-*
-* insertionSort :	0.185527
-* selectSort :		0.241906 
-* bubbleSort :		0.529248
-* quickSort :		0.005730
-* mergeSort :		0.005041
-**/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 void preencherVetor(int *vetor, int n);
 void swap(int *n1, int *n2);
@@ -22,27 +12,29 @@ void bubbleSort(int *vetor, int n);				//sem variavel
 void quickSort(int *left, int *right);			//sem variavel
 void mergeSort(int *comeco, int *fim);			//sem variavel
 void merge(int *comeco, int *meio, int *fim);	//sem variavel
+void shellSort(int *vet, int size);
 
 int main(){
 	clock_t tempo = clock();
-	int n = 10000;
-	int vetor[10000];
+	int n = 1000000;
+	int vetor[1000000];
 
 	preencherVetor(vetor, n);
 
 	//insertionSort(vetor, n);
 	//selectSort(vetor, n);
 	//bubbleSort(vetor, n);
-	//quickSort(vetor, &vetor[n-1]);
-	mergeSort(vetor, &vetor[n-1]);
+	quickSort(vetor, &vetor[n-1]);
+	//mergeSort(vetor, &vetor[n-1]);
+	//shellSort(vetor,n);
 
 	//imprimir numeros
-/*
+
 	for(int i = 0; i < n; i++)
 		printf("%d ", vetor[i]);
 	puts("");
-*/
-	printf("Tempo: %f \n",(clock() - tempo) / (double)CLOCKS_PER_SEC);
+
+	//printf("Tempo: %f \n",(clock() - tempo) / (double)CLOCKS_PER_SEC);
 
 	return 0;
 }
@@ -50,7 +42,7 @@ int main(){
 void preencherVetor(int *vetor, int n){
 	int i;
 	for(i = 0; i < n; i++)
-		vetor[i] = rand() % n;
+		vetor[i] = n - i;
 }
 
 void swap(int *n1, int *n2){
@@ -173,4 +165,25 @@ void merge(int *comeco, int *meio, int *fim){
 	}
 
 	free(vetorAux);
+}
+
+void shellSort(int *vet, int size) {
+    int i , j , value;
+ 
+    int h = 1;
+    while(h < size) {
+        h = 3*h+1;
+    }
+    while (h > 0) {
+        for(i = h; i < size; i++) {
+            value = vet[i];
+            j = i;
+            while (j > h-1 && value <= vet[j - h]) {
+                vet[j] = vet [j - h];
+                j = j - h;
+            }
+            vet [j] = value;
+        }
+        h = h/3;
+    }
 }
