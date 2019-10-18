@@ -32,7 +32,6 @@ void leArq(void *pBuffer, FILE *entrada);
 void insertionSort(void *pBuffer);
 void selectSort(void *pBuffer);
 void bubbleSort(void *pBuffer);
-void quickSort(void *pBuffer, int *left, int *right);
 
 typedef struct pessoa{
 	char nome[30];
@@ -40,10 +39,12 @@ typedef struct pessoa{
 	char telefone[15];
 }TAD;
 
+void quickSort(void *pBuffer, TAD *left, TAD *right);
+//void swap(TAD *r1, TAD *r2);
+
 int main(){
 	void *pBuffer = NULL;	//ponteiro void onde fica tudo armazenado
 	int *opcao, *qtd, *tam;
-	int *controleRecursao, *left, *right;		//quickSort
 	FILE *entrada;
 	
 	pBuffer = (void *)malloc(3 * sizeof(int));		//aloca os 3 inteiros iniciais
@@ -110,23 +111,8 @@ int main(){
 				bubbleSort(pBuffer);
 				break;
 			case 8:
-				*tam += (4*sizeof(int) + 2*sizeof(TAD));
-				*tam += sizeof(int);	//controle da recursão
-				pBuffer = realloc(pBuffer, *tam + (5*sizeof(int) + 2*sizeof(TAD)));
-
-				qtd = (int *)(pBuffer + (1 * sizeof(int)));
-				tam = (int *)(pBuffer + (2 * sizeof(int)));
-
-				controleRecursao = (int *)(pBuffer + (3 * sizeof(int)) + (*qtd * sizeof(TAD)));
-				*controleRecursao = 0;
-				left = (int *)(pBuffer + *tam);
-				right = (int *)(left + sizeof(int));
-
-				//*left = 0;
-				//*right = *qtd;
-				*controleRecursao += 1;
-
-				quickSort(pBuffer, left, right);
+				//quickSort(pBuffer, (TAD *)(pBuffer +  3*sizeof(int)), (TAD *)(pBuffer + 3*sizeof(int) + *qtd*sizeof(TAD) ));
+				printf("talvez um dia eu faça\n");
 				break;
 			case 9:
 				printf("saindo...\n");
@@ -411,16 +397,30 @@ void bubbleSort(void *pBuffer){
 	pBuffer = realloc(pBuffer, *tam);
 }
 
-void quickSort(void *pBuffer, int *left, int *right){
-	int *controleRecursao, *qtd, *tam;
-	int *i, *j;
-	TAD *mid, *tmp, *vI, *vJ;
-	
-	qtd = (int *)(pBuffer + (1 * sizeof(int)));
-	tam = (int *)(pBuffer + (2 * sizeof(int)));
-	controleRecursao = (int *)(pBuffer + (3 * sizeof(int)) + (*qtd * sizeof(TAD)));
+void quickSort(void *pBuffer, TAD *left, TAD *right){
+	TAD *i, *j;
+	TAD *meio = left;
 
-	printf("%d ", *controleRecursao);
+	i = left;
+	j = right;
+
+	do{
+		while(strcmp(meio->nome, i->nome) == 1)
+			i += sizeof(TAD);
+
+		while(strcmp(j->nome, meio->nome) == 1)
+			j -= sizeof(TAD);
+
+		if(i <= j){
+			//swap((TAD *)i, (TAD *)j);
+			i++;
+			j--;
+		}
+	}while(i <= j);
+
+	if(right < j)
+		quickSort(pBuffer, (TAD *)right, (TAD *)j);
+
+	if(i < left)
+		quickSort(pBuffer, (TAD *)i, (TAD *)right);
 }
-
-
