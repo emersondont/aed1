@@ -13,7 +13,6 @@ typedef struct nodo{
 }SNodo;
 
 typedef struct lista{
-	unsigned int nCount;
 	SNodo *pFirst;
 	SNodo *pLast;
 }SLista;
@@ -26,5 +25,7 @@ void push(SLista *pLista, SNodo *pNodo);
 void imprimir(SLista *pLista);
 void imprimirDados(SInfo *dado);
 void clean(SLista *pLista);
+
+void quickSort(SNodo *left, SNodo *right);
 
 #endif

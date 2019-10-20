@@ -16,6 +16,9 @@ int main(){
 			case 2:
 				imprimir(pLista);
 				break;
+			case 3:
+				quickSort(pLista->pFirst, pLista->pLast);
+				break;
 			case 0:
 				puts("saindo...");
 				break;

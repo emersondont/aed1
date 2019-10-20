@@ -8,7 +8,6 @@ SLista *criarLista(){
 	new = (SLista *)malloc(sizeof(SLista));
 	new->pFirst = NULL;
 	new->pLast = NULL;
-	new->nCount = 0;
 
 	return new;
 }
@@ -30,6 +29,7 @@ void menu(int *opcao){
 	puts("---MENU---");
 	puts("\t1 - inserir");
 	puts("\t2 - imprimir");
+	puts("\t3 - ordenar");
 	puts("\t0 - sair");
 	printf("opcao: ");
 	scanf("%d", opcao);
