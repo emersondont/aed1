@@ -20,11 +20,12 @@ typedef struct lista{
 SLista *criarLista();
 void menu(int *opcao);
 void lerString(char *c);
-SNodo *lerDados();
+SNodo *lerDados(int op);	//op = 0 : ler nome e idade, op = 1 : ler só nome
 void push(SLista *pLista, SNodo *pNodo);
 void imprimir(SLista *pLista);
 void imprimirDados(SInfo *dado);
 void clean(SLista *pLista);
+int remover(SLista *pLista);
 
 void quickSort(SNodo *left, SNodo *right);
 

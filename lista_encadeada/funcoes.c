@@ -29,7 +29,7 @@ void menu(int *opcao){
 	puts("---MENU---");
 	puts("\t1 - inserir");
 	puts("\t2 - imprimir");
-	puts("\t3 - ordenar");
+	puts("\t3 - remover");
 	puts("\t0 - sair");
 	printf("opcao: ");
 	scanf("%d", opcao);
@@ -41,7 +41,7 @@ void lerString(char *c){
 	*c = '\0';
 }
 
-SNodo *lerDados(){
+SNodo *lerDados(int op){
 	SNodo *new;
 	new = (SNodo *)malloc(sizeof(SNodo));
 	new->pPrevious = NULL;
@@ -51,6 +51,10 @@ SNodo *lerDados(){
 	getchar();
 	printf("Nome: ");
 	lerString(new->dado.nome);
+
+	if(op)		//se if == 1, nao precisa ler idade
+		return new;
+
 	printf("Idade: ");
 	scanf("%d", &new->dado.idade);
 	puts("");
@@ -96,4 +100,50 @@ void imprimirDados(SInfo *dado){
 	for(;tamNome > 0; tamNome--)
 		printf(" ");
 	printf("\t%d\n",dado->idade);
+}
+
+int remover(SLista *pLista){
+	int resul = 0;
+	SNodo *delete;	//nome do cara a ser excluido
+	SNodo *aux;
+	delete = lerDados(1);
+	
+	for(aux = pLista->pFirst; aux != NULL; aux = aux->pNext){
+		if(!(strcmp(aux->dado.nome, delete->dado.nome))){
+			resul = 1;
+			break;
+		}	
+	}
+
+	free(delete);
+	delete = aux;
+
+	if(!resul)	return 0;
+
+	if(!delete->pPrevious){		//remover o primeiro
+		if(!delete->pNext){		//é o unico
+			pLista->pFirst = NULL;
+			pLista->pLast = NULL;
+			free(delete);
+			return 1;
+		}
+			
+		pLista->pFirst = delete->pNext;
+		delete->pNext->pPrevious = NULL;
+		free(delete);	
+		return 1;
+	}
+	if(!delete->pNext){			//remover o ultimo
+		pLista->pLast = delete->pPrevious;
+		delete->pPrevious = NULL;
+		free(delete);
+		return 1;
+	}
+
+	aux = delete->pPrevious;
+	aux->pNext = delete->pNext;
+	delete->pNext->pPrevious = aux;
+
+	free(delete);
+	return 1;
 }

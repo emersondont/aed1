@@ -11,13 +11,16 @@ int main(){
 		menu(&opcao);
 		switch(opcao){
 			case 1:
-				push(pLista, lerDados());
+				push(pLista, lerDados(0));
 				break;
 			case 2:
 				imprimir(pLista);
 				break;
 			case 3:
-				quickSort(pLista->pFirst, pLista->pLast);
+				if(!remover(pLista))
+					puts("nao encontrado");
+				else
+					puts("removido");
 				break;
 			case 0:
 				puts("saindo...");
