@@ -52,9 +52,6 @@ SNodo *lerDados(int op){
 	printf("Nome: ");
 	lerString(new->dado.nome);
 
-	if(op)		//se if == 1, nao precisa ler idade
-		return new;
-
 	printf("Idade: ");
 	scanf("%d", &new->dado.idade);
 	puts("");

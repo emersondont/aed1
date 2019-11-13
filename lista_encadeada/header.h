@@ -27,6 +27,4 @@ void imprimirDados(SInfo *dado);
 void clean(SLista *pLista);
 int remover(SLista *pLista);
 
-void quickSort(SNodo *left, SNodo *right);
-
 #endif
