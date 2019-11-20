@@ -31,12 +31,14 @@ int main(){
     lerString(pilha);
 
     //calcula
-    for(int i = 1; !empty(pilha); i*= 2){
+    for(int i = 1; !empty(pilha); i *= 2){
         if(pop(pilha))
             resul += i;
     }
+    //
     printf("Resultado: %d\n", resul);
 
+    free(pilha);
     return 0;
 }
 
