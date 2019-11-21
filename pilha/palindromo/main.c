@@ -5,160 +5,181 @@ a) Imprimir o texto na ordem inversa;
 b) Verificar se o texto é um palíndromo
 */
 
-//ATENCAO, ESTE CODIGO ESTÁ UMA BAGUNÇA
-//super desorganizado, e não funciona com frases
-
 #include <stdio.h>
 #include <stdlib.h>
+#include "stack.h"
 
-typedef struct info{
-    char c;
-}SInfo;
-
-typedef struct nodo{
-    SInfo conteudo;
-    struct nodo *previus;
-}SNodo;
-
-typedef struct stack{
-    SNodo *topo;
-} SStack;
-
-void push(SStack *pilha, char c);
-int empty(SStack *pilha);
-SNodo *pop(SStack *pilha);
-void clean(SStack *pilha);
-void lerString(SStack *pilha, int *tam);
-void imprimirAoContrario(SStack *pilha);
-int verificador(SStack *pilha, int *tam);
+void lerStringEDarPush(Stack *pilha);
+Nodo *newNodo(char c);
+void imprimirAoContrario(Stack *pilha);
+int palindromo(Stack *pilha);
 
 int main(){
-    int tam = 0;
-    //inicializa a pilha
-    SStack *pilha;
-    pilha = (SStack *)malloc(sizeof(SStack));
-    pilha->topo = NULL;
-    //
-    printf("Palavra.....: ");
-    lerString(pilha, &tam);
-    printf("Ao contrario: ");
-    imprimirAoContrario(pilha);
-
-    if(verificador(pilha, &tam))
-        printf("\tEh palindromo\n");
-    else
-        printf("\tNao eh palindromo\n");
-
-    
-    clean(pilha);
-    free(pilha);
-    return 0;
+	Stack pilha;
+	pilha.topo = NULL;
+	
+	printf("string......: ");
+	lerStringEDarPush(&pilha);
+	
+	printf("ao contrario: ");
+	imprimirAoContrario(&pilha);
+	
+	if(palindromo(&pilha))
+		printf("Eh palindromo\n");
+	else
+		printf("Nao eh palindromo\n");
+	
+	clean(&pilha);
+	return 0;
 }
 
-void lerString(SStack *pilha, int *tam){
-    char c;
-    while((c = getchar()) != '\n'){
-        *tam += 1;
-        push(pilha, c);
-    }
+void lerStringEDarPush(Stack *pilha){
+	char c;
+	
+	while((c = getchar()) != '\n'){
+		push(pilha, newNodo(c));
+	}
 }
 
-void push(SStack *pilha, char c){
-    SNodo *new;
-    new = (SNodo *)malloc(sizeof(SNodo));
-    new->conteudo.c = c;
-
-    if(!pilha->topo){       //pilha vazia
-        new->previus = NULL;
-        pilha->topo = new;
-    }
-    else{
-        SNodo *ult;
-        ult = pilha->topo;
-        new->previus = ult;
-
-        pilha->topo = new;
-    }
+Nodo *newNodo(char c){
+	Nodo *new;
+	new = (Nodo *)malloc(sizeof(Nodo));
+	new->conteudo.c = c;
+	new->previus = NULL;
+	
+	return new;
 }
 
-int empty(SStack *pilha){
-    if(!pilha->topo)
-        return 1;
-    else
-        return 0;
+void imprimirAoContrario(Stack *pilha){
+	Stack *pilhaAux = NULL;
+	Nodo *nodoAux = NULL;
+	
+	pilhaAux = (Stack *)malloc(sizeof(Stack));
+	pilhaAux->topo = NULL;
+	
+	while(!empty(pilha)){
+		nodoAux = pop(pilha);
+		push(pilhaAux, nodoAux);
+		
+		printf("%c", nodoAux->conteudo.c);
+	}
+	
+	//devolver p pilha original
+	while(!empty(pilhaAux)){
+		push(pilha, pop(pilhaAux));
+	}
+	
+	printf("\n");
+	free(pilhaAux);
 }
 
-SNodo *pop(SStack *pilha){
-    if(!pilha->topo){       //pilha vazia
-        return NULL;
-    }
-    SNodo *ult, *newUlt;
-
-    ult = pilha->topo;
-    newUlt = ult->previus;
-    pilha->topo = newUlt;
-
-    return ult;
+int palindromo(Stack *pilha){
+	Stack *primeiraMetade, *segundaMetade;
+	Nodo *aux;
+	int tam = 0;
+	int resul = 1;
+	
+	primeiraMetade = (Stack *)malloc(sizeof(Stack));
+	segundaMetade = (Stack *)malloc(sizeof(Stack));
+	
+	primeiraMetade->topo = NULL;
+	segundaMetade->topo = NULL;
+	
+	//passa tudo pra primeira e segunda(sem espacos)
+	while(!empty(pilha)){
+		aux = (Nodo *)malloc(sizeof(Nodo));
+		*aux = *top(pilha);
+		if(aux->conteudo.c != ' '){
+			push(segundaMetade, aux);
+			tam++;
+		}
+		
+		push(primeiraMetade, pop(pilha));
+	}
+	
+	while(!empty(primeiraMetade)){
+		push(pilha, pop(primeiraMetade));
+	}
+	
+	for(int i = 0; i < tam/2 ; i++){
+		push(primeiraMetade, pop(segundaMetade));
+	}
+	
+	if(tam % 2 == 1)
+		free(pop(segundaMetade));
+	
+	
+	while(!empty(segundaMetade)){
+		
+		if(
+			(pop(primeiraMetade)->conteudo.c)
+			!=
+			(pop(segundaMetade)->conteudo.c)
+		){
+			resul = 0;
+			break;
+		}
+	}
+	
+	clean(primeiraMetade);
+	clean(segundaMetade);
+	free(primeiraMetade);
+	free(segundaMetade);
+	
+	return resul;
 }
 
-void clean(SStack *pilha){
-    SNodo *clear;
-    while(clear = pop(pilha))
-        free(clear);
-}
 
-void imprimirAoContrario(SStack *pilha){
-    SStack *pilhaAux;
-    pilhaAux = (SStack *)malloc(sizeof(SStack));
-    pilhaAux->topo = NULL;
-
-    SNodo *aux;
-    while(!empty(pilha)){
-        aux = pop(pilha);
-        printf("%c", aux->conteudo.c);
-        push(pilhaAux, aux->conteudo.c);
-        free(aux);
-    }
-    printf("\n");
-
-    while(!empty(pilhaAux)){
-        aux = pop(pilhaAux);
-        push(pilha, aux->conteudo.c);
-        free(aux);
-    }
-    free(pilhaAux);
-}
-
-int verificador(SStack *pilha, int *tam){
-    SStack *pilhaAux;
-    pilhaAux = (SStack *)malloc(sizeof(SStack));
-    pilhaAux->topo = NULL;
-
-    SNodo *aux, *c1, *c2;
-    int verif = 1;
-
-    for(int i = 0; i < *tam / 2; i++){
-        aux = pop(pilha);
-        push(pilhaAux, aux->conteudo.c);
-        free(aux);
-    }
-    if(*tam % 2 == 1){
-        aux = pop(pilha);
-        free(aux);
-    }
-
-    for(int i = 0; i < *tam / 2; i++){
-        c1 = pop(pilha);
-        c2 = pop(pilhaAux);
-        if((c1->conteudo.c != c2->conteudo.c)){
-            verif = 0;
-            break;
+//FUNCOES STACK
+void push(Stack *pilha, Nodo *new){
+    if(!pilha){
+        pilha = (Stack *)malloc(sizeof(Stack));
+        pilha->topo = NULL;
+        
+        if(!pilha){
+            printf("ERRO AO CRIAR PILHA\n");
+            return;
         }
-        free(c1);
-        free(c2);
     }
 
-    free(pilhaAux);
+	if(empty(pilha)) {	//pilha vazia
+		new->previus = NULL;
+		pilha->topo = new;
+		return;
+	}
+	
+	Nodo *topo;
+	topo = pilha->topo;
+	new->previus = topo;
+	pilha->topo = new;
+}
 
-    return verif;
+Nodo *pop(Stack *pilha){
+	if(empty(pilha))
+		return NULL;
+	
+	Nodo *topo;
+	topo = pilha->topo;
+	pilha->topo = topo->previus;
+	
+	return topo;
+}
+
+Nodo *top(Stack *pilha){
+	if(empty(pilha))
+		return NULL;
+	
+	return pilha->topo;
+}
+
+int empty(Stack *pilha){
+	if(!pilha->topo)
+		return 1;
+	else
+		return 0;	
+}
+
+void clean(Stack *pilha){
+	while(!empty(pilha))
+		free(pop(pilha));
 }
