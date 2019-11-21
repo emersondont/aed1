@@ -15,6 +15,7 @@ typedef struct stack{
 	Nodo *topo;
 }Stack;
 
+void inicializa(Stack *pilha);
 void push(Stack *pilha, Nodo *new);
 Nodo *pop(Stack *pilha);
 int empty(Stack *pilha);

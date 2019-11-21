@@ -7,6 +7,7 @@ b) Verificar se o texto é um palíndromo
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "stack.h"
 
 void lerStringEDarPush(Stack *pilha);
@@ -15,9 +16,9 @@ void imprimirAoContrario(Stack *pilha);
 int palindromo(Stack *pilha);
 
 int main(){
-	Stack pilha;
-	pilha.topo = NULL;
-	
+	Stack *pilha = NULL;
+    inicializa(pilha);
+
 	printf("string......: ");
 	lerStringEDarPush(&pilha);
 	
@@ -30,6 +31,8 @@ int main(){
 		printf("Nao eh palindromo\n");
 	
 	clean(&pilha);
+    
+    free(pilha);
 	return 0;
 }
 
@@ -42,7 +45,7 @@ void lerStringEDarPush(Stack *pilha){
 }
 
 Nodo *newNodo(char c){
-	Nodo *new;
+	Nodo *new = NULL;
 	new = (Nodo *)malloc(sizeof(Nodo));
 	new->conteudo.c = c;
 	new->previus = NULL;
@@ -54,6 +57,7 @@ void imprimirAoContrario(Stack *pilha){
 	Stack *pilhaAux = NULL;
 	Nodo *nodoAux = NULL;
 	
+    
 	pilhaAux = (Stack *)malloc(sizeof(Stack));
 	pilhaAux->topo = NULL;
 	
@@ -74,43 +78,48 @@ void imprimirAoContrario(Stack *pilha){
 }
 
 int palindromo(Stack *pilha){
-	Stack *primeiraMetade, *segundaMetade;
-	Nodo *aux;
+	Stack *primeiraMetade = NULL;
+    Stack *segundaMetade = NULL;
+	Nodo *aux = NULL;
 	int tam = 0;
 	int resul = 1;
-	
+    
 	primeiraMetade = (Stack *)malloc(sizeof(Stack));
 	segundaMetade = (Stack *)malloc(sizeof(Stack));
 	
 	primeiraMetade->topo = NULL;
 	segundaMetade->topo = NULL;
 	
-	//passa tudo pra primeira e segunda(sem espacos)
+	//passa tudo pra primeira e pra segunda(só com letras em minusculo)
 	while(!empty(pilha)){
 		aux = (Nodo *)malloc(sizeof(Nodo));
 		*aux = *top(pilha);
-		if(aux->conteudo.c != ' '){
-			push(segundaMetade, aux);
+
+        if(isalpha(aux->conteudo.c)){
+            aux->conteudo.c = tolower(aux->conteudo.c);
+            push(segundaMetade, aux);
 			tam++;
-		}
+        }
 		
 		push(primeiraMetade, pop(pilha));
 	}
 	
+    //devolve pra pilha original
 	while(!empty(primeiraMetade)){
 		push(pilha, pop(primeiraMetade));
 	}
 	
+    //metade em cada pilha
 	for(int i = 0; i < tam/2 ; i++){
 		push(primeiraMetade, pop(segundaMetade));
 	}
 	
+    //se o numero de caracteres for impar, retirar o do meio
 	if(tam % 2 == 1)
 		free(pop(segundaMetade));
 	
-	
+	//faz o teste
 	while(!empty(segundaMetade)){
-		
 		if(
 			(pop(primeiraMetade)->conteudo.c)
 			!=
@@ -131,17 +140,19 @@ int palindromo(Stack *pilha){
 
 
 //FUNCOES STACK
-void push(Stack *pilha, Nodo *new){
+void inicializa(Stack *pilha){
     if(!pilha){
         pilha = (Stack *)malloc(sizeof(Stack));
         pilha->topo = NULL;
-        
+
         if(!pilha){
             printf("ERRO AO CRIAR PILHA\n");
-            return;
+            exit(1);
         }
     }
+}
 
+void push(Stack *pilha, Nodo *new){
 	if(empty(pilha)) {	//pilha vazia
 		new->previus = NULL;
 		pilha->topo = new;
@@ -180,6 +191,7 @@ int empty(Stack *pilha){
 }
 
 void clean(Stack *pilha){
-	while(!empty(pilha))
+	while(!empty(pilha)){
 		free(pop(pilha));
+    }
 }
