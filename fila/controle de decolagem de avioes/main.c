@@ -12,14 +12,18 @@ e) Listar as características do primeiro avião da fila
 #include <stdlib.h>
 #include "queue.h"
 
+void lerString(char *c);
 Nodo *lerDados(void);
 
 int main(){
     Queue *fila = NULL;
     fila = inicializa();
 
+    push(fila, lerDados());
+    push(fila, lerDados());
 
-
+    printf("%s \n", pop(fila)->conteudo.nomeAviao);
+    printf("%s \n", pop(fila)->conteudo.nomeAviao);
 
 
     clean(fila);
@@ -27,8 +31,23 @@ int main(){
     return 0;
 }
 
+void lerString(char *c){
+    while((*c = getchar()) != '\n')
+        c++;
+}
+
 Nodo *lerDados(void){
-    
+    Nodo *new = NULL;
+    new = (Nodo *)malloc(sizeof(Nodo));
+    new->next = NULL;
+    new->previus = NULL;
+
+    printf("Nome do aviao: ");
+    lerString(new->conteudo.nomeAviao);
+    printf("Capacidade: ");
+    scanf("%d", &new->conteudo.capacidade);
+
+    return new;
 }
 
 
