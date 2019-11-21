@@ -57,7 +57,6 @@ void imprimirAoContrario(Stack *pilha){
 	Stack *pilhaAux = NULL;
 	Nodo *nodoAux = NULL;
 	
-    
 	pilhaAux = (Stack *)malloc(sizeof(Stack));
 	pilhaAux->topo = NULL;
 	
@@ -191,7 +190,6 @@ int empty(Stack *pilha){
 }
 
 void clean(Stack *pilha){
-	while(!empty(pilha)){
+	while(!empty(pilha))
 		free(pop(pilha));
-    }
 }
