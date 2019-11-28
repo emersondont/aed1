@@ -1,27 +1,29 @@
-#ifndef TREE_H
+﻿#ifndef TREE_H
 #define TREE_H
 
-typedef struct item{
+typedef struct info{
 	int num;
 	//
-}Item;
+}Info;
 
 typedef struct no{
-	Item conteudo;
-	struct no *childLeft;	//filho a esquerda
-	struct no *childRight;	//filho a direita
+	Info conteudo;
+	struct no *left;
+	struct no *right;
 }No;
 
 typedef struct tree{
-	No *root;		//raiz
+	No *root;
 }Tree;
 
-Tree *inicializaTree(void);
-No *createNo(int n);
-No *push(No *root, No *new);
-int isLeaf(No *nodo);
-void print(No *root);
+void insere(No **root, No *new);
+void imprimir(No *root);
 void clean(No *root);
-void remove(No *root, int n);
+void excluir(No **root);
+int isLeaf(No *root);
+No *createNo(int n);
+No *search(No *root, int num);
+No *minimo(No *root);
+No *sucessor(No *root);
 
 #endif

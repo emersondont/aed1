@@ -1,99 +1,169 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
 
-int main() {
-	Tree *arvore = NULL;
-	arvore = inicializaTree();
+void menu(int *op);
 
-	arvore->root = push(arvore->root, createNo(10));
-	arvore->root = push(arvore->root, createNo(13));
-	arvore->root = push(arvore->root, createNo(4));
-	arvore->root = push(arvore->root, createNo(5));
-	arvore->root = push(arvore->root, createNo(3));
-
-	print(arvore->root);
-	printf("\n");
-
-	clean(arvore->root);
-	free(arvore);
+int main(){
+	No *root = NULL;
+	int opcao = 0;
+	int num = 0;
+	
+	do{
+		menu(&opcao);
+		switch(opcao){
+			case 1:
+				printf("num: ");
+				scanf("%d", &num);
+				insere(&root, createNo(num));
+				break;
+			case 2:
+				imprimir(root);
+				break;
+			case 3:
+				printf("num: ");
+				scanf("%d", &num);
+				//excluir(search(root, num));
+				break;
+			case 0:
+				printf("saindo...\n");
+				break;
+			default:
+				printf("opcao invalida\n\n");
+				break;
+		}
+	}while(opcao != 0);
+	
+	clean(root);
 	return 0;
 }
 
-Tree *inicializaTree(void){
-	Tree *arvore = NULL;
-	arvore = (Tree *)malloc(sizeof(arvore));
-	arvore->root = NULL;
+void menu(int *op){
+	printf("\t1 - push\n\t2 - print\n\t3 - excluir\n\t0 - exit\n");
+	printf("opcao: ");
+	scanf("%d", op);
+}
 
-	return arvore;
+
+//FUNCOES TREE
+void insere(No **root, No *new){
+	if(!(*root)){
+		*root = new;
+		return;
+	}
+	
+	if(new->conteudo.num < (*root)->conteudo.num){
+		insere(&(*root)->left, new);
+	}
+	else if(new->conteudo.num > (*root)->conteudo.num){
+		insere(&(*root)->right, new);
+	}
+	else{
+		printf("Erro : registro ja existe na arvore.\n");
+	}
 }
 
 No *createNo(int n){
 	No *new = NULL;
 	new = (No *)malloc(sizeof(No));
-
-	new->childLeft = NULL;
-	new->childRight = NULL;
+	
+	if(!new){
+		printf("Erro : nao foi possivel alocar memoria.\n");
+		exit(1);
+	}
+	
+	new->left = NULL;
+	new->right = NULL;
 	new->conteudo.num = n;
-
+	
 	return new;
 }
 
-No *push(No *root, No *new){
-	if(root == NULL){	//Raiz(desta sub arvore) vazia
-		root = new;
-		return root;
-	}
-
-	if(new->conteudo.num < root->conteudo.num){
-		root->childLeft = push(root->childLeft, new);
-	}
-	else if(new->conteudo.num > root->conteudo.num){
-		root->childRight = push(root->childRight, new);
-	}
-	else
-		printf("Erro : Registro ja existe na arvore\n");
-
-	return root;
-}
-
-int isLeaf(No *nodo){
-	if(!nodo->childLeft && !nodo->childRight)
-		return 1;
-	else
-		return 0;
-}
-
-void print(No *root){
+void imprimir(No *root){
 	if(root != NULL){
-		printf("%d ", root->conteudo.num);
-		print(root->childLeft);
-		print(root->childRight);
+		imprimir(root->left);
+		printf("%d\n", root->conteudo.num);
+		imprimir(root->right);
 	}
 }
 
 void clean(No *root){
 	if(root != NULL){
-		clean(root->childLeft);
-		clean(root->childRight);
+		clean(root->left);
+		clean(root->right);
 		free(root);
 	}
 }
 
-void remove(No *root, int n){
-	if(root == NULL)
-		return;
-
-	if(root->conteudo.num == n){
-
-
-		
+//
+No *search(No *root, int num){
+	if(!root){
+		printf("Registro nao encontrado\n");
+		return NULL;
 	}
-
-	if(root->conteudo < n){
-		remove(root->childLeft, n);
+	if(num < root->conteudo.num){
+		return search(root->left, num);
+	}
+	else if(num > root->conteudo.num){
+		return search(root->right, num);
 	}
 	else{
-		remove(root->childRight, n);
+		return root;
 	}
+}
+
+void excluir(No **root){
+	if(!(*root)){
+		return;
+	}
+	No *aux = NULL;
+
+	if(!(*root)->left && !(*root)->right){
+		root = NULL;
+		free(root);
+		//*root = aux
+	}
+
+	/*
+	if(!root->left || !root->right)
+		aux = root;
+	else
+		aux = sucessor(root);
+	
+	
+	if(aux->left != NULL)
+		root = aux->left;
+	else
+		root = aux->right;
+	*/
+	
+	
+	
+}
+
+No *sucessor(No *root){
+	if(root->right != NULL)
+		return minimo(root->right);
+	
+	else
+		return NULL;
+	
+	//
+}
+
+No *minimo(No *root){
+	if(!root)
+		return NULL;
+	
+	if(root->left != NULL)
+		root = minimo(root->left);
+	
+	return root;
+}
+
+int isLeaf(No *root){
+	if(!root->left && !root->right)
+		return 1;
+	else
+		return 0;
 }
