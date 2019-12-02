@@ -1,6 +1,7 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
+#include "avl.h"
 
 void menu(int *op);
 
@@ -39,18 +40,47 @@ int main(){
 				printf("opcao invalida\n\n");
 				break;
 		}
+		printf("\nFATOR DE BALANCEAMNETO: %d\n", fb(root));
 	}while(opcao != 0);
 	
 	clean(root);
 	return 0;
 }
 
+//funcoes AVL
+int altura(No *root){
+	int hLeft = 0;	//altura sub arvore esquerda
+	int hRight = 0;	//altura sub arvore direita
+
+	if(!root)
+		return 0;
+
+	hLeft = altura(root->left);
+	hRight = altura(root->right);
+
+	if(hLeft > hRight)
+		return hLeft + 1;
+	else
+		return hRight + 1; 
+}
+
+int fb(No *root){	//retorna: < 1 se a sub arvore da esq é maior, > 1 se a sub arvore da dir é maior
+	if(!root)
+		return 0;
+
+	return altura(root->left) - altura(root->right);
+
+}
+
+
+
+
+//
 void menu(int *op){
 	printf("\t1 - push\n\t2 - print tree\n\t3 - print order\n\t4 - delete\n\t0 - exit\n");
 	printf("opcao: ");
 	scanf("%d", op);
 }
-
 
 //FUNCOES TREE
 void insere(No **root, No *new){
