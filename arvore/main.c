@@ -18,12 +18,19 @@ int main(){
 				insere(&root, createNo(num));
 				break;
 			case 2:
-				imprimir(root);
+				printf("\n");
+				print(root, 0);
+				printf("\n");
 				break;
 			case 3:
+				printf("\n");
+				imprimir(root);
+				printf("\n");
+				break;
+			case 4:
 				printf("num: ");
 				scanf("%d", &num);
-				//excluir(search(root, num));
+				excluir(&root, num);
 				break;
 			case 0:
 				printf("saindo...\n");
@@ -39,7 +46,7 @@ int main(){
 }
 
 void menu(int *op){
-	printf("\t1 - push\n\t2 - print\n\t3 - excluir\n\t0 - exit\n");
+	printf("\t1 - push\n\t2 - print tree\n\t3 - print order\n\t4 - delete\n\t0 - exit\n");
 	printf("opcao: ");
 	scanf("%d", op);
 }
@@ -86,6 +93,15 @@ void imprimir(No *root){
 		imprimir(root->right);
 	}
 }
+void print(No *root, int l){
+	if(root != NULL){
+		print(root->right, l+1);
+		for(int i = 0; i < l;i++)
+			printf("\t");
+		printf("(%d)\n", root->conteudo.num);
+		print(root->left, l+1);
+	}
+}
 
 void clean(No *root){
 	if(root != NULL){
@@ -112,43 +128,55 @@ No *search(No *root, int num){
 	}
 }
 
-void excluir(No **root){
+void excluir(No **root, int num){
 	if(!(*root)){
+		printf("Registro nao encontrado\n");
 		return;
 	}
-	No *aux = NULL;
-
-	if(!(*root)->left && !(*root)->right){
-		root = NULL;
-		free(root);
-		//*root = aux
+	
+	if(num < (*root)->conteudo.num){
+		excluir(&(*root)->left, num);
+		return;
 	}
+	
+	if(num > (*root)->conteudo.num){
+		excluir(&(*root)->right, num);
+		return;
+	}
+	
+	/*		encontramos o cara p remover	*/
+	
+	No *delete = *root;
+	
+	if(isLeaf(*root)){		//se é uma folha
+		free(delete);
+		*root = NULL;
+		return;
+	}
+	
+	if((*root)->left == NULL){		//se não tem filho a esquerda
+		printf("\nchegou\n");
+		*root = delete->right;
+		free(delete);
+		return;
+	}
+	
+	if((*root)->right == NULL){		//se não tem filho a direita
+		*root = delete->left;
+		free(delete);
+		return;
+	}
+	
+	/*		caso tenha os dois filhos	*/
+	
+	//SUCESSOR = menor elemento da sub arvore da direita
+	//No *delete = *root;
 
-	/*
-	if(!root->left || !root->right)
-		aux = root;
-	else
-		aux = sucessor(root);
-	
-	
-	if(aux->left != NULL)
-		root = aux->left;
-	else
-		root = aux->right;
-	*/
-	
-	
-	
-}
+	No *aux = minimo(delete->right);	//sucessor
+	//aux = cara que deve ir para o lugar de quem vai ser removido
+	delete->conteudo = aux->conteudo;	//faço a troca de conteudo
 
-No *sucessor(No *root){
-	if(root->right != NULL)
-		return minimo(root->right);
-	
-	else
-		return NULL;
-	
-	//
+	excluir(&(*root)->right, aux->conteudo.num);//e agora eu removo o "aux", pq o conteudo dele já foi pro lugar certo
 }
 
 No *minimo(No *root){
