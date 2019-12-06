@@ -279,18 +279,30 @@ void excluir(No **root, int num){
 	}
 	
 	/*		caso tenha os dois filhos	*/
-	
+	/*
 	//SUCESSOR = menor elemento da sub arvore da direita
-	//No *delete = *root;
-
 	No *aux = minimo(delete->right);	//sucessor
 	//aux = cara que deve ir para o lugar de quem vai ser removido
 	delete->conteudo = aux->conteudo;	//faço a troca de conteudo
-
 	excluir(&(*root)->right, aux->conteudo.num);//e agora eu removo o "aux", pq o conteudo dele já foi pro lugar certo
-	
-	
 	//essa funcao nao ficou muito boa nao
+	*/
+
+	antecessor(*root, &(*root)->left);
+}
+
+void antecessor(No *q, No **r){
+	No *aux = NULL;
+
+	if((*r)->right != NULL){
+		antecessor(q, &(*r)->right);
+		return;
+	}
+
+	q->conteudo = (*r)->conteudo;
+	aux = *r;
+	*r = (*r)->left;
+	free(aux);
 }
 
 No *minimo(No *root){

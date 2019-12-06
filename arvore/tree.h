@@ -25,6 +25,7 @@ No *search(No *root, int num);
 No *minimo(No *root);
 No *sucessor(No *root);
 int isLeaf(No *root);
+void antecessor(No *q, No **r);
 
 
 #endif

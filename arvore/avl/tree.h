@@ -17,7 +17,7 @@ typedef struct no{
 }No;
 
 
-void insere(No **root, No *new);
+//void insere(No **root, No *new);
 /*	imprime os números em ordem		*/
 void imprimir(No *root);
 /*	imprime a arvore com os nós		*/
@@ -28,6 +28,7 @@ No *createNo(int n);
 No *search(No *root, int num);
 No *minimo(No *root);
 int isLeaf(No *root);
+void antecessor(No *q, No **r);
 
 
 #endif
