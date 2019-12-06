@@ -16,7 +16,7 @@ int main(){
 			case 1:
 				printf("num: ");
 				scanf("%d", &num);
-				insere(&root, createNo(num));
+				insereAVL(&root, createNo(num));
 				break;
 			case 2:
 				printf("\n");
@@ -40,7 +40,7 @@ int main(){
 				printf("opcao invalida\n\n");
 				break;
 		}
-		printf("\nFATOR DE BALANCEAMNETO: %d\n", fb(root));
+		//printf("\nFATOR DE BALANCEAMNETO: %d\n", fb(root));
 	}while(opcao != 0);
 	
 	clean(root);
@@ -64,7 +64,7 @@ int altura(No *root){
 		return hRight + 1; 
 }
 
-int fb(No *root){	//retorna: < 1 se a sub arvore da esq é maior, > 1 se a sub arvore da dir é maior
+int fb(No *root){
 	if(!root)
 		return 0;
 
@@ -72,7 +72,103 @@ int fb(No *root){	//retorna: < 1 se a sub arvore da esq é maior, > 1 se a sub a
 
 }
 
+void RSE(No **root){
+	No *aux = NULL;
+	
+	aux = (*root)->right;
+	(*root)->right = aux->left;
+	aux->left = *root;
+	*root = aux;
+}
 
+void RSD(No **root){
+	No *aux = NULL;
+	
+	aux = (*root)->left;
+	(*root)->left = aux->right;
+	aux->right = *root;
+	*root = aux;
+}
+
+int balancaEsquerda(No **root){
+	int fbe = fb((*root)->left);
+	
+	if(fbe > 0){
+		RSD(root);
+		return 1;
+	}
+	if(fbe < 0){
+	/*	ROTACAO DUPLA DIREITA	*/
+		RSE(&(*root)->left);
+		RSD(root);
+		return 1;
+	}
+	return 0;
+}
+
+int balancaDireita(No **root){
+	int fbd = fb((*root)->right);
+	
+	if(fbd < 0){
+		RSE(root);
+		return 1;
+	}
+	if(fbd > 0){
+	/*	ROTACAO DUPLA ESQUERDA	*/
+		RSD(&(*root)->right);
+		RSE(root);
+		return 1;
+	}
+	return 0;
+	
+}
+
+int balanceamento(No **root){
+	int FB = fb(*root);
+	
+	if(FB > 1)
+		return balancaEsquerda(root);
+	if(FB < -1)
+		return balancaDireita(root);
+	
+	return 0;
+}
+
+int insereAVL(No **root, No *new){
+	if(!(*root)){
+		*root = new;
+		return 1;
+	}
+	
+	
+	if(new->conteudo.num < (*root)->conteudo.num){
+		if(insereAVL(&(*root)->left, new)){
+			if(balanceamento(root))
+				return 0;
+			else
+				return 1;
+		}
+			
+	}
+	
+	
+	else if(new->conteudo.num > (*root)->conteudo.num){
+		if(insereAVL(&(*root)->right, new)){
+			if(balanceamento(root))
+				return 0;
+			else
+				return 1;
+		}
+		else
+			return 0;
+	}
+	
+	
+	else{
+		printf("Erro : registro ja existe na arvore.\n");
+		return 0;
+	}
+}
 
 
 //
@@ -83,22 +179,6 @@ void menu(int *op){
 }
 
 //FUNCOES TREE
-void insere(No **root, No *new){
-	if(!(*root)){
-		*root = new;
-		return;
-	}
-	
-	if(new->conteudo.num < (*root)->conteudo.num){
-		insere(&(*root)->left, new);
-	}
-	else if(new->conteudo.num > (*root)->conteudo.num){
-		insere(&(*root)->right, new);
-	}
-	else{
-		printf("Erro : registro ja existe na arvore.\n");
-	}
-}
 
 No *createNo(int n){
 	No *new = NULL;
@@ -123,12 +203,14 @@ void imprimir(No *root){
 		imprimir(root->right);
 	}
 }
+
 void print(No *root, int l){
 	if(root != NULL){
 		print(root->right, l+1);
 		for(int i = 0; i < l;i++)
 			printf("\t");
-		printf("(%d)\n", root->conteudo.num);
+		printf(BLU "(%d)\n", root->conteudo.num);
+		printf(RESET);
 		print(root->left, l+1);
 	}
 }
@@ -206,6 +288,9 @@ void excluir(No **root, int num){
 	delete->conteudo = aux->conteudo;	//faço a troca de conteudo
 
 	excluir(&(*root)->right, aux->conteudo.num);//e agora eu removo o "aux", pq o conteudo dele já foi pro lugar certo
+	
+	
+	//essa funcao nao ficou muito boa nao
 }
 
 No *minimo(No *root){

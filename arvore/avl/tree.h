@@ -1,6 +1,10 @@
 ﻿#ifndef TREE_H
 #define TREE_H
 
+#define RED   "\x1B[31m"
+#define BLU   "\x1B[34m"
+#define RESET "\x1B[0m"
+
 typedef struct info{
 	int num;
 	//
@@ -14,7 +18,7 @@ typedef struct no{
 
 
 void insere(No **root, No *new);
-/*	imprime os ńúmeros em ordem		*/
+/*	imprime os números em ordem		*/
 void imprimir(No *root);
 /*	imprime a arvore com os nós		*/
 void print(No *root, int l);
@@ -23,7 +27,6 @@ void excluir(No **root, int num);
 No *createNo(int n);
 No *search(No *root, int num);
 No *minimo(No *root);
-No *sucessor(No *root);
 int isLeaf(No *root);
 
 

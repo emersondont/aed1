@@ -176,6 +176,8 @@ void excluir(No **root, int num){
 	delete->conteudo = aux->conteudo;	//faço a troca de conteudo
 
 	excluir(&(*root)->right, aux->conteudo.num);//e agora eu removo o "aux", pq o conteudo dele já foi pro lugar certo
+
+	//essa funcao nao ficou muito boa nao
 }
 
 No *minimo(No *root){
