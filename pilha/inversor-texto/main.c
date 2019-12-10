@@ -1,5 +1,5 @@
 /*
- Escreva um algoritmo, usando uma Pilha, que inverte as letras de cada palavra de umtexto terminado por ponto (.)
+ Escreva um algoritmo, usando uma Pilha, que inverte as letras de cada palavra de um texto
  preservando a ordem das palavras.
  */
 
@@ -7,70 +7,77 @@
 #include <stdlib.h>
 #include "stack.h"
 
-void lerString(Stack *pilha);
+int lerString(Stack *pilha);
 Nodo *newNodo(char c);
-int verificador(Stack *pilha);
+void verificador(Stack *pilha);
 
 int main(){
 	Stack *pilha = NULL;
+	int resul = 1;
 
-	for(;;){
+	while(resul){
 		pilha = inicializa();
-		lerString(pilha);
 
-		verificador(pilha);
-
-		clean(pilha);
-		free(pilha);
+		if(resul = lerString(pilha) != 0){
+			verificador(pilha);
+			clean(pilha);
+			free(pilha);
+		}
 	}
 
+	clean(pilha);
+	free(pilha);
 
 	return 0;
 }
 
-int verificador(Stack *pilha){
-	int resul = 1;
-	Stack *nova = NULL;
-	Stack *nova2 = NULL;
-	Nodo *c = NULL;
+void verificador(Stack *pilha){
+	Stack *pilhaAux = NULL;
+	Stack *pilhaAux2 = NULL;
+	Nodo *nodoAux = NULL;
 
-	nova = inicializa();
-	nova2 = inicializa();
-	// mundo
+	pilhaAux = inicializa();
+	pilhaAux2 = inicializa();
+	
 	while(!empty(pilha)){
-		c = pop(pilha);
-		if(c->conteudo.c == ' '){
+		nodoAux = pop(pilha);
 			
-			while(!empty(nova)){
-				push(nova2, pop(nova));
-				//mundo
-			}
-			push(nova2,newNodo(' '));
+		if(nodoAux->conteudo.c != ' ' || empty(pilha))
+			push(pilhaAux, nodoAux);
 
-		}else{
-			printf("%c ", c->conteudo.c);
-			push(nova, c);
-			//odnum
+		if(nodoAux->conteudo.c == ' ' || empty(pilha)){
+			while(!empty(pilhaAux))
+				push(pilhaAux2, pop(pilhaAux));
+
+			if(!empty(pilha))
+				push(pilhaAux2, nodoAux);
 		}
 		
-		//free(c);
-
-		
 	}
-	while(!empty(nova)){
-		printf("\n%c - ",pop(nova)->conteudo.c);
+	
+	while(!empty(pilhaAux2)){
+		nodoAux = pop(pilhaAux2);
+		printf("%c", nodoAux->conteudo.c);
+		free(nodoAux);
 	}
-
-	return resul;
+	printf("\n");
+	
+	clean(pilhaAux);
+	clean(pilhaAux2);
+	free(pilhaAux);
+	free(pilhaAux2);
 }
 
 
-void lerString(Stack *pilha){
+int lerString(Stack *pilha){
 	char c;
+	int resul = 0;
 
 	while((c = getchar()) != '\n'){
 		push(pilha, newNodo(c));
+		resul = 1;
 	}
+	return resul;
 }
 
 Nodo *newNodo(char c){
